@@ -10,19 +10,34 @@ Entwickelt für Eltern, die während eines Spiels mitzählen und andere Eltern o
 
 ### Dateien
 
-- [tennis-score/btv_u9_score_ios.html](tennis-score/btv_u9_score_ios.html) — für iPhone / iPad optimiert (Version 1.0)
-- [tennis-score/btv_u9_score_android.html](tennis-score/btv_u9_score_android.html) — für Android optimiert (Version 1.0)
+- [tennis-score/btv_u9_score_ios.html](tennis-score/btv_u9_score_ios.html) — für iPhone / iPad optimiert (Version 1.2)
+- [tennis-score/btv_u9_score_android.html](tennis-score/btv_u9_score_android.html) — für Android optimiert (Version 1.2)
 
 ### Funktionen
 
 - Einzel und Doppel (mit vollständiger Aufschlag-Rotation nach BTV-Regeln)
 - Automatische Zählweise nach BTV U9-Regeln: Kurzsätze, No-Ad, Satz-Tiebreak, Match-Tiebreak
 - Seitenwechsel-Anzeige mit Hinweisfenster
-- Aufschlag-Anzeige und manuelle Korrekturmöglichkeit
+- Aufschlag-Anzeige (Deuce/Ad) und manuelle Korrekturmöglichkeit
 - Rückgängig-Funktion für Fehleingaben
 - Hoch- und Querformat (Landscape zeigt Spielfeld wie von der Seite übers Netz)
 - Ergebnis als PDF drucken/teilen
-- Eingebauter Regelguide und Bedienungsanleitung
+- Eingebauter Regelguide mit detaillierten Team-Aufstellungsregeln und Bedienungsanleitung
+- In-Spiel-Menü für Zugriff auf Regelguide und Bedienung ohne Spielunterbrechung
+
+### Changelog
+
+**Version 1.2** (2026-05-16)
+
+- Bugfix: 40:40-Punkt-Eintrag funktioniert jetzt korrekt — Tap auf Spieler bei 40:40 gewinnt Spiel sofort
+- Bugfix: No-Ad und Satz-Tiebreak-Seitenwahl tauschen nicht mehr die Spielhälften, sondern setzen nur die Aufschlagseite innerhalb der Spielhälfte
+- Feature: Regelguide und Bedienung sind jetzt über In-Spiel-Menü zugänglich, ohne das Spiel zu unterbrechen
+- Erweitert: Neue Sektion „Aufstellung der Teams" im Regelguide mit detaillierten Regeln zu Spieler-Positionen und Aufschlag-Rotation
+- Dokumentation: Bedienungsanleitung aktualisiert mit Erklärungen zu 40:40-Regel, Deuce/Ad-Anzeige und in-Spiel-Menü-Nutzung
+
+**Version 1.0** (2026-04-24)
+
+- Initiale Version mit Einzel-, Doppel- und Match-Tiebreak-Unterstützung
 
 ### Regeln
 

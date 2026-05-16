@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>BTV U9 Kleinfeld Score · iOS 1.0</title>
+<title>BTV U9 Kleinfeld Score · iOS 1.2</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
 
@@ -180,6 +180,18 @@
   .zone-heim-gast.heim { background: rgba(46,125,82,0.15); color: var(--accent); }
   .zone-heim-gast.gast { background: rgba(44,95,187,0.15); color: var(--blue); }
   .zone-side-label { font-size: 9px; color: var(--text-light); letter-spacing: 1px; }
+  .zone-deuce-ad {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(46,125,82,0.15);
+    padding: 2px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: none;
+  }
+  .player-zone.serving .zone-deuce-ad { display: inline-block; }
 
   .zone-name { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-align: center; padding: 0 12px; margin-top: 16px; }
   .point-display { font-family: 'Bebas Neue', sans-serif; font-size: 74px; line-height: 1; color: var(--text); }
@@ -455,9 +467,15 @@
   }
 
 
-  /* Visual side swap in court */
-  .court-area.swapped #zone-home { order: 2; }
-  .court-area.swapped #zone-guest { order: 1; }
+  /* Visual side swap in court (Portrait-only; Landscape uses row-reverse) */
+  @media (orientation: portrait) {
+    .court-area.swapped #zone-home { order: 2; }
+    .court-area.swapped #zone-guest { order: 1; }
+  }
+
+  /* Visual side swap im Doppel (Hochformat: Grid order; Querformat: row-reverse greift) */
+  #court-doppel.swapped #dbl-zone-home  { order: 2; }
+  #court-doppel.swapped #dbl-zone-guest { order: 1; }
 
   /* In landscape, order controls left/right; in portrait, top/bottom */
   .btn-side-change {
@@ -558,7 +576,7 @@
     <div class="btv">BTV Kleinfeld U9</div>
     <h1>Score</h1>
     <div class="sub">BTV Südbayern 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.0</div>
+    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.2</div>
   </div>
   <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 
@@ -574,13 +592,13 @@
       <span class="field-label">Spieler</span>
       <div class="name-row">
         <div class="side-badge">Heim<br>oben</div>
-        <input type="text" id="name-home" placeholder="Name Heimspieler" maxlength="16">
+        <input type="text" id="name-home" placeholder="Name Heimspieler" maxlength="16" oninput="updateServeButtonLabels('einzel')">
       </div>
     </div>
     <div>
       <div class="name-row">
         <div class="side-badge guest-badge">Gast<br>unten</div>
-        <input type="text" id="name-guest" placeholder="Name Gastspieler" maxlength="16">
+        <input type="text" id="name-guest" placeholder="Name Gastspieler" maxlength="16" oninput="updateServeButtonLabels('einzel')">
       </div>
     </div>
     <div>
@@ -597,15 +615,15 @@
     <div>
       <span class="field-label">Heim-Team (oben / links)</span>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <input type="text" id="dbl-h1" placeholder="Heim Spieler 1" maxlength="14">
-        <input type="text" id="dbl-h2" placeholder="Heim Spieler 2" maxlength="14">
+        <input type="text" id="dbl-h1" placeholder="Heim Spieler 1" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+        <input type="text" id="dbl-h2" placeholder="Heim Spieler 2" maxlength="14" oninput="updateServeButtonLabels('doppel')">
       </div>
     </div>
     <div>
       <span class="field-label">Gast-Team (unten / rechts)</span>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <input type="text" id="dbl-g1" placeholder="Gast Spieler 1" maxlength="14">
-        <input type="text" id="dbl-g2" placeholder="Gast Spieler 2" maxlength="14">
+        <input type="text" id="dbl-g1" placeholder="Gast Spieler 1" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+        <input type="text" id="dbl-g2" placeholder="Gast Spieler 2" maxlength="14" oninput="updateServeButtonLabels('doppel')">
       </div>
     </div>
     <div>
@@ -639,8 +657,8 @@
   </div>
 
   <div style="display:flex;gap:8px;width:100%;max-width:380px">
-    <button class="btn-rules-open" style="flex:1" onclick="showScreen('rules')">📋 Regelguide</button>
-    <button class="btn-rules-open" style="flex:1" onclick="showScreen('howto')">📱 Bedienung</button>
+    <button class="btn-rules-open" style="flex:1" onclick="rulesReturnTarget='setup'; showScreen('rules')">📋 Regelguide</button>
+    <button class="btn-rules-open" style="flex:1" onclick="rulesReturnTarget='setup'; showScreen('howto')">📱 Bedienung</button>
   </div>
   <button class="btn-start" id="btn-start" onclick="startGame()">▶ Einzel starten</button>
 </div>
@@ -695,6 +713,7 @@
       <div class="zone-top-row">
         <span class="zone-heim-gast heim">Heim</span>
         <span class="zone-side-label" id="side-home">◀ Links</span>
+        <span class="zone-deuce-ad" id="serving-side-home">Deuce</span>
       </div>
       <div class="zone-name" id="zone-name-home">Heimspieler</div>
       <div class="point-display" id="point-home">0</div>
@@ -705,6 +724,7 @@
       <div class="zone-top-row">
         <span class="zone-heim-gast gast">Gast</span>
         <span class="zone-side-label" id="side-guest">▶ Rechts</span>
+        <span class="zone-deuce-ad" id="serving-side-guest">Deuce</span>
       </div>
       <div class="zone-name" id="zone-name-guest">Gastspieler</div>
       <div class="point-display" id="point-guest">0</div>
@@ -768,6 +788,7 @@
     <button class="btn-undo" onclick="undoPoint()">↩ Rückgängig</button>
     <button class="btn-side-change" onclick="manualSwapSides()">⇄ Seiten<br>wechseln</button>
     <button class="btn-serve-manual" onclick="manualToggleServe()">🎾 Aufschlag<br>wechseln</button>
+    <button class="btn-serve-manual" id="btn-player-change" onclick="manualTogglePlayer()" style="display:none">🔄 Spieler<br>wechseln</button>
   </div>
 </div>
 
@@ -775,7 +796,7 @@
 <!-- ══ RULES ══ -->
 <div id="rules" class="screen">
   <div class="rules-header">
-    <button class="btn-rules-back" onclick="showScreen('setup')">← Zurück</button>
+    <button class="btn-rules-back" onclick="returnFromRules()">← Zurück</button>
     <h2>🎾 Regelguide U9</h2>
   </div>
 
@@ -881,8 +902,6 @@
       </div>
     </div>
 
-  </div>
-
     <!-- Doppel Sonderregel -->
     <div class="rule-card">
       <div class="rule-card-header">
@@ -900,13 +919,30 @@
       </div>
     </div>
 
+    <!-- Aufstellung der Teams -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">📋</span>
+        <span class="rule-card-title">Aufstellung der Teams</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Einzel — Sortierung:</strong> Die Spieler für die Einzelspiele werden entsprechend ihrer gemeldeten Position aufsteigend sortiert. Der Spieler mit der niedrigsten Position in der Meldeliste spielt auf <strong>Position 1</strong>, der Spieler mit der höchsten Position auf <strong>Position 4</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Einzel — Reihenfolge:</strong> Bei den Einzel-Paarungen spielen <strong>zuerst die Positionen 2 und 4</strong>, anschließend <strong>1 und 3</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Doppel — Sortierung:</strong> Die Spieler für die Doppelspiele werden analog ihrer gemeldeten Positionen aufsteigend sortiert und ihnen entsprechend die <strong>Positionen 1 bis 4</strong> zugewiesen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Doppel — Paarungen:</strong> Die Spieler des Doppels mit der <strong>niedrigeren Summe</strong> ihrer beiden Positionen spielen das <strong>Doppel 1</strong>. Die Spieler mit der höheren Summe spielen das <strong>Doppel 2</strong>.</div></div>
+        <div class="rule-highlight"><strong>Sonderfall</strong>Ist die Summe der Positionen beider Doppel <strong>5</strong> (also 1+4 und 2+3), ist es egal, welche Paarung Doppel 1 oder Doppel 2 spielt.</div>
+      </div>
+    </div>
+
+  </div>
+
   <div class="rules-footer">Quelle: BTV Ausschreibung U9 Kleinfeld Sommer 2026 · Stand 24.04.2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ HOW-TO ══ -->
 <div id="howto" class="screen">
   <div class="rules-header">
-    <button class="btn-rules-back" onclick="showScreen('setup')">← Zurück</button>
+    <button class="btn-rules-back" onclick="returnFromRules()">← Zurück</button>
     <h2>📱 Bedienungsanleitung</h2>
   </div>
 
@@ -950,6 +986,7 @@
         <div class="rule-item"><div class="rule-dot"></div><div>Mehrfach tippen um mehrere Schritte zurückzugehen.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>🎾 Aufschlag wechseln</strong> kann der Aufschlag manuell korrigiert werden.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>⇄ Seiten wechseln</strong> kann die Seitenanzeige manuell korrigiert werden.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Nur Doppel: Mit <strong>🔄 Spieler wechseln</strong> kann innerhalb eines Teams die Aufschlagreihenfolge korrigiert werden.</div></div>
       </div>
     </div>
 
@@ -960,9 +997,24 @@
       </div>
       <div class="rule-card-body">
         <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>Seitenwechsel</strong> erscheint automatisch ein grünes Banner und ein Hinweisfenster.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>40:40 (No-Ad)</strong> erscheint ein Fenster — dort auswählen, wer den Entscheidungspunkt gewonnen hat.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Beim <strong>Tiebreak</strong> wählt der Rückschläger seine Einschlagseite per Fenster.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>40:40 (No-Ad)</strong> erscheint ein Fenster — der Rückschläger wählt <strong>◀ Links</strong> oder <strong>Rechts ▶</strong> als Einschlagseite. Danach den nächsten Punkt durch Tippen auf den Punktgewinner vergeben.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Beim <strong>Tiebreak</strong> wählt der Rückschläger ebenfalls seine Einschlagseite per Fenster — die Spielhälften bleiben unverändert.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Beim aufschlagenden Spieler wird das <strong>Deuce/Ad-Label</strong> angezeigt — daran erkennt man, von welcher Seite gerade aufgeschlagen wird.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Das <strong>Banner oben</strong> zeigt immer den aktuellen Spielabschnitt (Satz, Tiebreak, Match-Tiebreak).</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">☰</span>
+        <span class="rule-card-title">Menü während des Spiels</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Oben rechts auf <strong>Menü</strong> tippen, um Optionen zu öffnen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Weiterspielen</strong> schließt das Menü und kehrt zum Spiel zurück.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>📋 Regelguide</strong> und <strong>📱 Bedienung</strong> können auch während eines laufenden Spiels aufgerufen werden — das Spiel wird nicht beendet, der Spielstand bleibt erhalten. „← Zurück" führt zurück zum Spiel.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>← Namen ändern</strong> springt zum Setup-Bildschirm.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Neues Spiel</strong> startet ein komplett neues Match (Bestätigung erforderlich).</div></div>
       </div>
     </div>
 
@@ -1004,7 +1056,7 @@
     </div>
 
   </div>
-  <div class="rules-footer">BTV U9 Kleinfeld Score · iOS 1.0 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">BTV U9 Kleinfeld Score · iOS 1.2 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ WINNER ══ -->
@@ -1032,7 +1084,8 @@
   <div class="modal">
     <div style="font-size:36px;margin-bottom:6px">🎾</div>
     <h2 id="tbside-modal-title">Satz-Tiebreak!</h2>
-    <p>Rückschläger <strong id="tbside-receiver"></strong> wählt die Einschlagseite:</p>
+    <p style="margin:0 0 4px">Rückschläger wählt die Einschlagseite:</p>
+    <p style="font-size:18px;font-weight:700;margin:0 0 14px" id="tbside-receiver"></p>
     <div class="btn-row" style="flex-direction:column;gap:8px">
       <button class="btn-primary" id="tbside-btn-left" onclick="chooseTBSide('left')">◀ Links</button>
       <button class="btn-primary btn-blue" id="tbside-btn-right" onclick="chooseTBSide('right')">Rechts ▶</button>
@@ -1044,10 +1097,11 @@
 <div class="modal-overlay" id="modal-noad">
   <div class="modal">
     <h2>40 : 40</h2>
-    <p>Rückschläger wählt die Einschlagseite.<br>Wer gewinnt diesen Punkt?</p>
-    <div class="btn-row">
-      <button class="btn-primary" id="noad-home-btn" onclick="scoreNoAd('home')">Heim</button>
-      <button class="btn-primary btn-blue" id="noad-guest-btn" onclick="scoreNoAd('guest')">Gast</button>
+    <p style="margin:0 0 4px">Rückschläger wählt die Einschlagseite:</p>
+    <p style="font-size:18px;font-weight:700;margin:0 0 14px" id="noad-receiver"></p>
+    <div class="btn-row" style="flex-direction:column;gap:8px">
+      <button class="btn-primary" id="noad-side-left" onclick="chooseNoAdSide('left')">◀ Links</button>
+      <button class="btn-primary btn-blue" id="noad-side-right" onclick="chooseNoAdSide('right')">Rechts ▶</button>
     </div>
   </div>
 </div>
@@ -1082,6 +1136,8 @@
     <p id="menu-score-text" style="margin-bottom:14px">–</p>
     <div class="btn-row" style="flex-direction:column;gap:8px">
       <button class="btn-primary" onclick="closeMenu()">Weiterspielen</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="openFromMenu('rules')">📋 Regelguide</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="openFromMenu('howto')">📱 Bedienung</button>
       <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="goToSetupFromMenu()">← Namen ändern</button>
       <button class="btn-secondary" style="padding:12px;font-size:14px;color:#c00" onclick="confirmNewMatch()">Neues Spiel</button>
     </div>
@@ -1123,6 +1179,7 @@ function freshState(nameHome, nameGuest) {
     tbTotal: 0,
     sidesSwapped: false,
     visualSwapped: false,  // display: home shown on swapped side
+    pointInGame: 0,  // 0=Deuce, 1=Ad — wechselt nach jedem Punkt
     finished: false,
   };
 }
@@ -1158,20 +1215,42 @@ function swapSetupSides() {
 // Manual side swap during match (for correction)
 function manualSwapSides() {
   history.push(JSON.parse(JSON.stringify(state)));
-  swapSides();
-  renderAll();
+  if (currentMode === 'doppel') {
+    dblSwapSides();
+    renderDoppel();
+  } else {
+    swapSides();
+    renderAll();
+  }
+}
+
+function updateServeButtonLabels(mode) {
+  if (mode === 'einzel') {
+    const h = document.getElementById('name-home').value.trim() || 'Spieler 1';
+    const g = document.getElementById('name-guest').value.trim() || 'Spieler 2';
+    document.getElementById('serve-p1').textContent = `🎾 ${h}`;
+    document.getElementById('serve-p2').textContent = `🎾 ${g}`;
+  } else if (mode === 'doppel') {
+    const h1 = document.getElementById('dbl-h1').value.trim() || 'Spieler 1';
+    const h2 = document.getElementById('dbl-h2').value.trim() || 'Spieler 2';
+    document.getElementById('dbl-first-h1').textContent = h1;
+    document.getElementById('dbl-first-h2').textContent = h2;
+    const g1 = document.getElementById('dbl-g1').value.trim() || 'Spieler 1';
+    const g2 = document.getElementById('dbl-g2').value.trim() || 'Spieler 2';
+    document.getElementById('dbl-first-g1').textContent = g1;
+    document.getElementById('dbl-first-g2').textContent = g2;
+  }
 }
 
 function startMatch() {
-  const h = document.getElementById('name-home').value.trim() || 'Heim';
-  const g = document.getElementById('name-guest').value.trim() || 'Gast';
-  // Update serve button labels
-  document.getElementById('serve-p1').textContent = `🎾 ${h || 'Heim'}`;
-  document.getElementById('serve-p2').textContent = `🎾 ${g || 'Gast'}`;
+  const h = document.getElementById('name-home').value.trim() || 'Spieler 1';
+  const g = document.getElementById('name-guest').value.trim() || 'Spieler 2';
   state = freshState(h, g);
   if (setupSidesSwapped) { state.sidesSwapped = true; state.visualSwapped = true; }
   history = [];
   matchResult = null;
+  currentMode = 'einzel';
+  showCourt('einzel');
   showScreen('score');
   renderAll();
 }
@@ -1210,14 +1289,21 @@ function scorePoint(player) {
 }
 
 function scoreNormalPoint(player) {
-  if (state.points.home === 3 && state.points.guest === 3) return;
+  // No-Ad: Bei 40:40 entscheidet der nächste Tap das Game direkt
+  if (state.points.home === 3 && state.points.guest === 3) {
+    winGame(player);
+    return;
+  }
   state.points[player]++;
   if (state.points.home === 3 && state.points.guest === 3) {
-    document.getElementById('noad-home-btn').textContent = state.names.home;
-    document.getElementById('noad-guest-btn').textContent = state.names.guest;
+    const recv = state.serving === 'home' ? 'guest' : 'home';
+    document.getElementById('noad-receiver').textContent = state.names[recv];
+    document.getElementById('noad-side-left').textContent = '◀ Links · ' + state.names[recv];
+    document.getElementById('noad-side-right').textContent = state.names[recv] + ' · Rechts ▶';
     document.getElementById('modal-noad').classList.add('active');
     renderAll(); return;
   }
+  state.pointInGame++;
   if (state.points[player] > 3) winGame(player);
   else renderAll();
 }
@@ -1228,8 +1314,22 @@ function scoreNoAd(winner) {
   else winGame(winner);
 }
 
+function chooseNoAdSide(side) {
+  document.getElementById('modal-noad').classList.remove('active');
+  // Bei 40:40 findet KEIN Spielhälften-Wechsel statt — nur die Aufschlag-/
+  // Empfangsseite innerhalb der jeweiligen Hälfte ändert sich (Deuce/Ad).
+  if (currentMode === 'doppel') {
+    dblState.pointInGame = (side === 'left') ? 0 : 1;
+    renderDoppel();
+  } else {
+    state.pointInGame = (side === 'left') ? 0 : 1;
+    renderAll();
+  }
+}
+
 function winGame(player) {
   state.points = { home: 0, guest: 0 };
+  state.pointInGame = 0;
   state.games[player]++;
   state.gamesInSet++;
   switchServe(); // wechselt nach jedem Spiel
@@ -1311,17 +1411,22 @@ function showTiebreakSideChoice() {
 
 function chooseTBSide(side) {
   document.getElementById('modal-tbside').classList.remove('active');
-  // side = 'left' or 'right' — receiver's chosen side
-  // home is currently !sidesSwapped → left
-  // if receiver is guest and wants left, we need sidesSwapped = true
-  const receiver = state.serving === 'home' ? 'guest' : 'home';
-  const receiverCurrentlyLeft = (receiver === 'home') ? !state.sidesSwapped : state.sidesSwapped;
-  if (side === 'left' && !receiverCurrentlyLeft) swapSides();
-  if (side === 'right' && receiverCurrentlyLeft) swapSides();
-  state.phase = 'tiebreak';
-  state.tbPoints = { home: 0, guest: 0 };
-  state.tbTotal = 0;
-  renderAll();
+  // Bei Tiebreak findet KEIN Spielhälften-Wechsel statt — nur die Aufschlag-/
+  // Empfangsseite innerhalb der jeweiligen Hälfte ändert sich.
+  // Ein evtl. fälliger Hälftenwechsel ist bereits davor in winGame() passiert.
+  if (currentMode === 'doppel') {
+    dblState.pointInGame = (side === 'left') ? 0 : 1;
+    dblState.phase = 'tiebreak';
+    dblState.tbPoints = { home: 0, guest: 0 };
+    dblState.tbTotal = 0;
+    renderDoppel();
+  } else {
+    state.pointInGame = (side === 'left') ? 0 : 1;
+    state.phase = 'tiebreak';
+    state.tbPoints = { home: 0, guest: 0 };
+    state.tbTotal = 0;
+    renderAll();
+  }
 }
 
 function winSet(player, fromTB = false) {
@@ -1390,7 +1495,30 @@ function winMatch(player) {
 }
 
 function switchServe() { state.serving = state.serving === 'home' ? 'guest' : 'home'; }
-function manualToggleServe() { history.push(JSON.parse(JSON.stringify(state))); switchServe(); renderAll(); }
+function manualToggleServe() {
+  history.push(JSON.parse(JSON.stringify(state)));
+  if (currentMode === 'doppel') {
+    const currentTeam = dblState.rotation[dblState.rotationIdx][0];
+    do {
+      dblState.rotationIdx = (dblState.rotationIdx + 1) % 4;
+    } while (dblState.rotation[dblState.rotationIdx][0] === currentTeam);
+    dblState.servingTeam = dblState.rotation[dblState.rotationIdx][0];
+    renderDoppel();
+  } else {
+    switchServe();
+    renderAll();
+  }
+}
+function manualTogglePlayer() {
+  history.push(JSON.parse(JSON.stringify(state)));
+  const idx = dblState.rotationIdx;
+  const partnerIdx = (idx + 2) % 4;
+  const tmp = dblState.rotation[idx][1];
+  dblState.rotation[idx][1] = dblState.rotation[partnerIdx][1];
+  dblState.rotation[partnerIdx][1] = tmp;
+  dblState.servingTeam = dblState.rotation[idx][0];
+  renderDoppel();
+}
 function undoPoint() {
   if (!history.length) return;
   if (currentMode === 'doppel') {
@@ -1468,11 +1596,18 @@ function exportPDF() {
 
     <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
     <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
-    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (iOS 1.0) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (iOS 1.2) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
   `;
 
   document.getElementById('pdf-area').innerHTML = html;
-  setTimeout(() => window.print(), 300);
+
+  const slug = s => s.replace(/\s+/g, '-');
+  const filename = r.modus === 'Doppel'
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.2`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.2`;
+  const originalTitle = document.title;
+  document.title = filename;
+  setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
 }
 
 // ══════════════════════════════════════════════
@@ -1492,6 +1627,10 @@ function renderAll() {
   const homeLeft = !sidesSwapped;
   document.getElementById('side-home').textContent = homeLeft ? '◀ Links' : 'Rechts ▶';
   document.getElementById('side-guest').textContent = homeLeft ? '▶ Rechts' : '◀ Links';
+
+  const servingSide = (state.pointInGame || 0) % 2 === 0 ? 'Deuce' : 'Ad';
+  document.getElementById('serving-side-home').textContent = serving === 'home' ? servingSide : '';
+  document.getElementById('serving-side-guest').textContent = serving === 'guest' ? servingSide : '';
 
   document.getElementById('zone-home').classList.toggle('serving', serving === 'home');
   document.getElementById('zone-guest').classList.toggle('serving', serving === 'guest');
@@ -1522,8 +1661,13 @@ function renderAll() {
       hEl.className = 'set-score' + (w==='home' ? ' won' : '');
       gEl.className = 'set-score' + (w==='guest' ? ' won' : '');
     } else if (i === currentSet - 1) {
-      const lbl = phase === 'matchtb' ? 'MT' : '–';
-      hEl.textContent = lbl; gEl.textContent = lbl;
+      if (phase === 'matchtb') {
+        hEl.textContent = 'MT'; gEl.textContent = 'MT';
+      } else if (phase === 'tiebreak') {
+        hEl.textContent = games.home; gEl.textContent = games.guest;
+      } else {
+        hEl.textContent = '–'; gEl.textContent = '–';
+      }
       hEl.className = 'set-score current'; gEl.className = 'set-score current';
     } else {
       hEl.textContent = '–'; gEl.textContent = '–';
@@ -1560,12 +1704,20 @@ let sideModalCb = null, setModalCb = null;
 
 function triggerSideModal(cb) {
   sideModalCb = cb;
-  const isMatch = state.phase === 'matchtb';
-  let reason = isMatch
-    ? `Match-Tiebreak: ${state.tbPoints.home}:${state.tbPoints.guest} (6 Punkte gespielt)`
-    : `Spielstand: ${state.games.home}:${state.games.guest} (${state.gamesInSet} Spiele)`;
+  let reason;
+  if (currentMode === 'doppel') {
+    const isDblMatch = dblState.phase === 'matchtb';
+    reason = isDblMatch
+      ? `Match-Tiebreak: ${dblState.tbPoints.home}:${dblState.tbPoints.guest} (6 Punkte gespielt)`
+      : `Spielstand: ${dblState.games.home}:${dblState.games.guest} (${dblState.gamesInSet} Spiele)`;
+  } else {
+    const isMatch = state.phase === 'matchtb';
+    reason = isMatch
+      ? `Match-Tiebreak: ${state.tbPoints.home}:${state.tbPoints.guest} (6 Punkte gespielt)`
+      : `Spielstand: ${state.games.home}:${state.games.guest} (${state.gamesInSet} Spiele)`;
+  }
   document.getElementById('side-modal-text').textContent = `${reason}\n\nDie Spieler wechseln jetzt die Seite!`;
-  renderAll();
+  if (currentMode === 'doppel') renderDoppel(); else renderAll();
   document.getElementById('modal-side').classList.add('active');
 }
 
@@ -1589,14 +1741,35 @@ function closeSetModal() {
 function showMenu() { renderAll(); document.getElementById('modal-menu').classList.add('active'); }
 function closeMenu() { document.getElementById('modal-menu').classList.remove('active'); }
 
+let rulesReturnTarget = 'setup';
+function openFromMenu(screenId) {
+  closeMenu();
+  rulesReturnTarget = 'score';
+  showScreen(screenId);
+}
+function returnFromRules() {
+  const target = rulesReturnTarget;
+  rulesReturnTarget = 'setup';
+  showScreen(target);
+  if (target === 'score') renderCurrent();
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
 document.addEventListener('dblclick', e => e.preventDefault());
-window.addEventListener('resize', () => { if (document.getElementById('score').classList.contains('active')) renderAll(); });
-window.addEventListener('orientationchange', () => { setTimeout(() => { if (document.getElementById('score').classList.contains('active')) renderAll(); }, 100); });
+function renderCurrent() {
+  if (currentMode === 'doppel') renderDoppel(); else renderAll();
+}
+function showCourt(mode) {
+  document.getElementById('court-area').style.display   = mode === 'einzel' ? '' : 'none';
+  document.getElementById('court-doppel').style.display = mode === 'doppel' ? '' : 'none';
+  document.getElementById('btn-player-change').style.display = mode === 'doppel' ? '' : 'none';
+}
+window.addEventListener('resize', () => { if (document.getElementById('score').classList.contains('active')) renderCurrent(); });
+window.addEventListener('orientationchange', () => { setTimeout(() => { if (document.getElementById('score').classList.contains('active')) renderCurrent(); }, 100); });
 
 // ══════════════════════════════════════════════
 //  MODE (Einzel / Doppel)
@@ -1708,17 +1881,17 @@ function freshDblState(names) {
 }
 
 function startDoppel() {
-  const h1 = document.getElementById('dbl-h1').value.trim() || 'H1';
-  const h2 = document.getElementById('dbl-h2').value.trim() || 'H2';
-  const g1 = document.getElementById('dbl-g1').value.trim() || 'G1';
-  const g2 = document.getElementById('dbl-g2').value.trim() || 'G2';
+  const h1 = document.getElementById('dbl-h1').value.trim() || 'Spieler 1';
+  const h2 = document.getElementById('dbl-h2').value.trim() || 'Spieler 2';
+  const g1 = document.getElementById('dbl-g1').value.trim() || 'Spieler 1';
+  const g2 = document.getElementById('dbl-g2').value.trim() || 'Spieler 2';
   const names = { home: [h1, h2], guest: [g1, g2] };
   dblState = freshDblState(names);
+  if (setupSidesSwapped) { dblState.sidesSwapped = true; dblState.visualSwapped = true; }
   history = [];
   matchResult = null;
-  // Show doppel court
-  document.getElementById('court-area').style.display = 'none';
-  document.getElementById('court-doppel').style.display = '';
+  currentMode = 'doppel';
+  showCourt('doppel');
   state = dblState; // share state for scoring/set logic
   showScreen('score');
   renderDoppel();
@@ -1849,6 +2022,8 @@ function dblWinMatch(player) {
     date: new Date().toLocaleDateString('de-DE', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
     time: new Date().toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }),
     names: { home: dblState.names.home.join(' / '), guest: dblState.names.guest.join(' / ') },
+    rawHome: dblState.names.home.join('-'),
+    rawGuest: dblState.names.guest.join('-'),
     modus: 'Doppel',
   };
 
@@ -1882,15 +2057,21 @@ function dblScorePoint(player) {
 }
 
 function dblScoreNormalPoint(player) {
-  if (dblState.points.home === 3 && dblState.points.guest === 3) return;
+  // No-Ad: Bei 40:40 entscheidet der nächste Tap das Game direkt
+  if (dblState.points.home === 3 && dblState.points.guest === 3) {
+    dblWinGame(player);
+    return;
+  }
   dblState.points[player]++;
   dblState.pointInGame++;
   if (dblState.points.home === 3 && dblState.points.guest === 3) {
-    // No-Ad: show modal with team names
+    // No-Ad: show modal with side choice
     const srv = dblCurrentServer();
     const recvTeam = srv[0] === 'home' ? 'guest' : 'home';
-    document.getElementById('noad-home-btn').textContent = dblState.names.home.join(' / ');
-    document.getElementById('noad-guest-btn').textContent = dblState.names.guest.join(' / ');
+    const recvName = dblState.names[recvTeam].join(' / ');
+    document.getElementById('noad-receiver').textContent = recvName;
+    document.getElementById('noad-side-left').textContent = '◀ Links · ' + recvName;
+    document.getElementById('noad-side-right').textContent = recvName + ' · Rechts ▶';
     document.getElementById('modal-noad').classList.add('active');
     renderDoppel(); return;
   }
@@ -1978,8 +2159,13 @@ function renderDoppel() {
       hEl.className = 'set-score' + (w==='home' ? ' won' : '');
       gEl.className = 'set-score' + (w==='guest' ? ' won' : '');
     } else if (i === ds.currentSet - 1) {
-      const lbl = ds.phase === 'matchtb' ? 'MT' : '–';
-      hEl.textContent = lbl; gEl.textContent = lbl;
+      if (ds.phase === 'matchtb') {
+        hEl.textContent = 'MT'; gEl.textContent = 'MT';
+      } else if (ds.phase === 'tiebreak') {
+        hEl.textContent = ds.games.home; gEl.textContent = ds.games.guest;
+      } else {
+        hEl.textContent = '–'; gEl.textContent = '–';
+      }
       hEl.className = 'set-score current'; gEl.className = 'set-score current';
     } else {
       hEl.textContent = '–'; gEl.textContent = '–';
@@ -2007,15 +2193,40 @@ function renderDoppel() {
   // Seitenwechsel: visualSwapped tauscht Feldhälften, logische Deuce/Ad bleiben.
   const servSide = ds.pointInGame % 2 === 0 ? 'right' : 'left'; // Deuce=rechts, Ad=links
   const partnerSide = servSide === 'right' ? 'left' : 'right';
-  const sideLabel = s => s === 'right' ? 'Deuce ▶' : '◀ Ad';
+  const isLandscape = window.innerWidth > window.innerHeight;
+
+  // Slot→Tennis-Seite: Deuce ist immer rechts vom jeweiligen Team aus dessen
+  // Spielperspektive → diagonale Anordnung auf dem Bildschirm. Nach Seitenwechsel
+  // (visualSwapped) tauschen p1/p2 ihre Tennis-Seiten je Team.
+  const slotSidesForTeam = (team) => {
+    let sides;
+    if (team === 'home') {
+      sides = isLandscape ? { p1: 'left',  p2: 'right' }
+                          : { p1: 'right', p2: 'left'  };
+    } else {
+      sides = isLandscape ? { p1: 'right', p2: 'left'  }
+                          : { p1: 'left',  p2: 'right' };
+    }
+    if (ds.visualSwapped) {
+      return { p1: sides.p2, p2: sides.p1 };
+    }
+    return sides;
+  };
+
+  // Pfeil zeigt zur Außenkante des Slots; Wort hängt von der Tennis-Seite ab.
+  const slotLabel = (slotNum, tennisSide) => {
+    const word = tennisSide === 'right' ? 'Deuce' : 'Ad';
+    if (isLandscape) {
+      return slotNum === 1 ? `▲ ${word}` : `${word} ▼`;
+    } else {
+      return slotNum === 1 ? `◀ ${word}` : `${word} ▶`;
+    }
+  };
 
   ['home','guest'].forEach(team => {
     const isServing = srv[0] === team;
     const p1id = team === 'home' ? 'h1' : 'g1';
     const p2id = team === 'home' ? 'h2' : 'g2';
-
-    document.getElementById(`dbl-${p1id}-name`).textContent = ds.names[team][0];
-    document.getElementById(`dbl-${p2id}-name`).textContent = ds.names[team][1];
 
     let p1side, p2side, p1server = false, p2server = false;
 
@@ -2033,15 +2244,30 @@ function renderDoppel() {
       p2side = ds.recvSides[1] || 'left';
     }
 
-    document.getElementById(`dbl-${p1id}-pos`).textContent = sideLabel(p1side);
-    document.getElementById(`dbl-${p2id}-pos`).textContent = sideLabel(p2side);
+    // Welche Tennis-Seite zeigt p1- bzw. p2-Slot dieses Teams in dieser Orientierung?
+    const slotSides = slotSidesForTeam(team);
+    const player1InP1Slot = (p1side === slotSides.p1);
+
+    const slot1 = {
+      name:   ds.names[team][player1InP1Slot ? 0 : 1],
+      server: player1InP1Slot ? p1server : p2server,
+    };
+    const slot2 = {
+      name:   ds.names[team][player1InP1Slot ? 1 : 0],
+      server: player1InP1Slot ? p2server : p1server,
+    };
+
+    document.getElementById(`dbl-${p1id}-name`).textContent = slot1.name;
+    document.getElementById(`dbl-${p2id}-name`).textContent = slot2.name;
+    document.getElementById(`dbl-${p1id}-pos`).textContent  = slotLabel(1, slotSides.p1);
+    document.getElementById(`dbl-${p2id}-pos`).textContent  = slotLabel(2, slotSides.p2);
 
     const s1 = document.getElementById(`dbl-${p1id}-slot`);
     const s2 = document.getElementById(`dbl-${p2id}-slot`);
-    s1.classList.toggle('is-server', p1server);
-    s2.classList.toggle('is-server', p2server);
-    document.getElementById(`dbl-${p1id}-serve`).style.display = p1server ? '' : 'none';
-    document.getElementById(`dbl-${p2id}-serve`).style.display = p2server ? '' : 'none';
+    s1.classList.toggle('is-server', slot1.server);
+    s2.classList.toggle('is-server', slot2.server);
+    document.getElementById(`dbl-${p1id}-serve`).style.display = slot1.server ? '' : 'none';
+    document.getElementById(`dbl-${p2id}-serve`).style.display = slot2.server ? '' : 'none';
 
     // Serve info: nur beim aufschlagenden Team
     const infoEl = document.getElementById(`dbl-${team}-serve-info`);

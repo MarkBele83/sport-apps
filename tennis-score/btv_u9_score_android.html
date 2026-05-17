@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#2e7d52">
-<title>BTV U9 Kleinfeld Score · Android 1.2</title>
+<title>BTV U9 Kleinfeld Score · Android 1.3</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;500;700&display=swap');
 
@@ -300,184 +300,16 @@
   }
 
 
-  /* ══════════ QUERFORMAT / LANDSCAPE ══════════
-     Layout:
-     ┌──────────────────────────────────────┐
-     │         score-header (voll)          │
-     ├──────────┬───────────────────┬───────┤
-     │Scoreboard│   court-area      │ Btns  │
-     │+ banner  │  [Heim] [Gast]    │       │
-     └──────────┴───────────────────┴───────┘
-  ══════════════════════════════════════════ */
-  @media (orientation: landscape) {
+  /* Querformat-Layout zurückgestellt — siehe TODO.md */
 
-    /* ─────────────────────────────────────────
-       Landscape layout — Blick von der Seite übers Netz:
-       ┌──────────────────────────────────────────────────┐
-       │               Header (voll)                      │
-       ├────────┬──────────────┬───┬──────────────┬───────┤
-       │Scorebrd│   HEIM       │ N │   GAST       │ Btns  │
-       │+Banner │   (links)    │ E │   (rechts)   │       │
-       └────────┴──────────────┴───┴──────────────┴───────┘
-    ───────────────────────────────────────────────────── */
+  /* Visual side swap in court (Hochformat) */
+  .court-area.swapped #zone-home { order: 2; }
+  .court-area.swapped #zone-guest { order: 1; }
 
-    #score {
-      display: -webkit-grid;
-      display: grid;
-      grid-template-rows: auto 1fr;
-      grid-template-columns: 100px 1fr 6px 1fr 64px;
-      grid-template-areas:
-        "header  header  header  header  header"
-        "sidebar heimcrt net     gastcrt btns";
-      overflow: hidden;
-    }
-
-    /* Header */
-    .score-header {
-      grid-area: header;
-      padding: 5px 10px;
-    }
-    .score-header .title { font-size: 11px; }
-    .score-header .status { font-size: 10px; }
-    .btn-header { font-size: 10px; padding: 3px 7px; }
-
-    /* Scoreboard sidebar */
-    .scoreboard {
-      grid-area: sidebar;
-      border-right: 1px solid var(--border);
-      border-bottom: none;
-      padding: 6px 6px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .scoreboard-header {
-      grid-template-columns: 1fr 22px 22px 22px 32px;
-      gap: 2px; margin-bottom: 2px; padding-bottom: 2px;
-    }
-    .scoreboard-row {
-      grid-template-columns: 1fr 22px 22px 22px 32px;
-      gap: 2px; padding: 2px 0;
-    }
-    .player-name-sb { font-size: 10px; }
-    .player-side-tag { font-size: 7px; }
-    .set-score { font-size: 13px; }
-    .game-score { font-size: 17px; padding: 1px 2px; }
-
-    /* Phase banner + side-change in sidebar */
-    .phase-banner {
-      grid-area: unset;
-      font-size: 7px; letter-spacing: 0.5px; padding: 3px 3px;
-      border-radius: 5px; margin-top: 4px; border: 1px solid #f0d070;
-    }
-    .phase-banner.tiebreak { border-color: #f5c090; }
-    .phase-banner.matchtb { border-color: #f0a0a0; }
-    .side-change-banner {
-      grid-area: unset;
-      font-size: 10px; padding: 3px 2px;
-      letter-spacing: 1px; border-radius: 5px; margin-top: 3px;
-    }
-
-    /* NET divider — now a real div #net-divider in HTML */
-    #net-divider {
-      grid-column: 3; grid-row: 2;
-      background: linear-gradient(to bottom,
-        transparent 0%, rgba(180,220,200,0.3) 10%,
-        rgba(100,160,130,0.7) 50%,
-        rgba(180,220,200,0.3) 90%, transparent 100%);
-      border-left: 2px solid rgba(46,125,82,0.5);
-      border-right: 2px solid rgba(46,125,82,0.5);
-      display: none;
-    }
-    @media (orientation: landscape) {
-      #net-divider { display: block; }
-    }
-
-    /* Court areas: use flexbox instead of display:contents (iOS Safari compat) */
-    .court-area {
-      grid-area: 2 / 2 / 3 / 5; /* span columns 2-4 (heimcrt through gastcrt) */
-      display: -webkit-flex;
-      display: flex;
-      -webkit-flex-direction: row;
-      flex-direction: row;
-      gap: 4px;
-      padding: 6px 4px;
-      min-height: 0;
-    }
-
-    .court-area #zone-home,
-    .court-area #zone-guest {
-      flex: 1;
-      border-radius: 10px;
-      margin: 0;
-    }
-
-    /* Swapped: reverse flex order */
-    .court-area.swapped {
-      -webkit-flex-direction: row-reverse;
-      flex-direction: row-reverse;
-    }
-
-    /* Doppel court */
-    #court-doppel {
-      grid-column: 2 / 5; grid-row: 2;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-flex-direction: row;
-      flex-direction: row;
-      gap: 4px;
-      padding: 6px 4px;
-      min-height: 0;
-    }
-
-    #court-doppel #dbl-zone-home,
-    #court-doppel #dbl-zone-guest {
-      flex: 1;
-      border-radius: 10px;
-    }
-
-    #court-doppel.swapped {
-      -webkit-flex-direction: row-reverse;
-      flex-direction: row-reverse;
-    }
-
-    /* Buttons sidebar */
-    .bottom-bar {
-      grid-area: btns;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 6px 5px 6px 2px;
-      justify-content: center;
-    }
-    .btn-undo { padding: 7px 2px; font-size: 9px; text-align: center; }
-    .btn-serve-manual { padding: 5px 2px; font-size: 8px; }
-    .btn-side-change { padding: 5px 2px; font-size: 8px; }
-
-    /* Player zones styling */
-    .player-zone { border-radius: 10px; }
-    .zone-name { font-size: 13px; margin-top: 22px; margin-bottom: 2px; }
-    .point-display { font-size: 54px; }
-    .tap-hint { font-size: 7px; bottom: 5px; }
-    .zone-top-row { top: 5px; left: 6px; right: 22px; }
-    .zone-heim-gast { font-size: 7px; padding: 1px 3px; }
-    .zone-side-label { font-size: 7px; }
-    .serve-dot { width: 9px; height: 9px; top: 7px; right: 7px; }
-    .zone-label { display: none; }
-  }
-
-
-  /* Visual side swap in court (Portrait-only; Landscape uses row-reverse) */
-  @media (orientation: portrait) {
-    .court-area.swapped #zone-home { order: 2; }
-    .court-area.swapped #zone-guest { order: 1; }
-  }
-
-  /* Visual side swap im Doppel (Hochformat: Grid order; Querformat: row-reverse greift) */
+  /* Visual side swap im Doppel (Hochformat) */
   #court-doppel.swapped #dbl-zone-home  { order: 2; }
   #court-doppel.swapped #dbl-zone-guest { order: 1; }
 
-  /* In landscape, order controls left/right; in portrait, top/bottom */
   .btn-side-change {
     flex: 1; background: rgba(46,125,82,0.1); border: 1px solid var(--green-mid);
     border-radius: 12px; color: var(--accent); font-family: 'Roboto', sans-serif;
@@ -495,8 +327,7 @@
 
 
   /* ══ DOPPEL team zone layout ══ */
-  /* Portrait: Spieler nebeneinander (links=Ad, rechts=Deuce) — Draufsicht */
-  /* Landscape: Spieler übereinander (oben/unten) — Seitenansicht */
+  /* Spieler nebeneinander (links=Ad, rechts=Deuce) — Draufsicht */
 
   .dbl-team-zone {
     flex-direction: column;
@@ -505,10 +336,10 @@
     overflow: hidden;
   }
 
-  /* Player row: side by side in portrait */
+  /* Player row: side by side */
   .dbl-players-row {
     display: flex;
-    flex-direction: row;  /* portrait: nebeneinander */
+    flex-direction: row;
     flex: 1;
     width: 100%;
     min-height: 0;
@@ -520,7 +351,7 @@
     background: rgba(255,255,255,0.35); gap: 2px; padding: 4px 6px;
     transition: background 0.2s;
   }
-  /* Portrait: vertical divider between players */
+  /* Vertical divider between players */
   .dbl-player-slot + .dbl-player-slot {
     border-left: 1px solid rgba(46,125,82,0.25);
   }
@@ -545,26 +376,6 @@
   /* Doppel scoreboard */
   .player-name-sb.dbl-team { font-size: 11px; }
 
-  /* ── Landscape: players stacked top/bottom (Seitenansicht) ── */
-  @media (orientation: landscape) {
-    .dbl-players-row {
-      flex-direction: column;  /* landscape: übereinander */
-    }
-    /* Portrait vertical divider → landscape horizontal divider */
-    .dbl-player-slot + .dbl-player-slot {
-      border-left: none;
-      border-top: 1px solid rgba(46,125,82,0.25);
-    }
-    .dbl-player-slot.is-server {
-      border-bottom: none;
-      border-left: 3px solid var(--yellow);
-    }
-    .dbl-player-name { font-size: 11px; }
-    .dbl-player-pos  { font-size: 7px; }
-    .dbl-point { font-size: 32px !important; }
-    .dbl-serve-info { font-size: 8px; }
-  }
-
 </style>
 </head>
 <body>
@@ -576,7 +387,7 @@
     <div class="btv">BTV Kleinfeld U9</div>
     <h1>Score</h1>
     <div class="sub">BTV Südbayern 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.2</div>
+    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.3</div>
   </div>
   <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 
@@ -703,9 +514,6 @@
   <div class="phase-banner normal" id="phase-banner">Kurzsatz 1 · Min. 4 Spiele · 2 Vorsprung · No-Ad</div>
   <div class="side-change-banner" id="side-banner">⇄ SEITENWECHSEL ⇄</div>
 
-  <!-- Landscape net divider (real element for iOS Safari compat) -->
-  <div id="net-divider"></div>
-
   <div class="court-area" id="court-area">
     <!-- EINZEL zones (default) -->
     <div class="player-zone home" id="zone-home" onclick="scorePoint('home')">
@@ -733,8 +541,7 @@
   </div>
 
   <!-- DOPPEL court (hidden by default) -->
-  <!-- Portrait: stacked top/bottom (Heim oben, Gast unten) wie Einzel -->
-  <!-- Landscape: nebeneinander (Heim links, Gast rechts), je Zone oben/unten aufgeteilt -->
+  <!-- Stacked top/bottom (Heim oben, Gast unten) wie Einzel -->
   <div class="court-area" id="court-doppel" style="display:none">
     <!-- Heim team zone: 2 Spieler oben/unten -->
     <div class="player-zone home dbl-team-zone" id="dbl-zone-home" onclick="scorePoint('home')">
@@ -743,7 +550,7 @@
         <span class="zone-heim-gast heim">Heim</span>
         <span class="zone-side-label" id="dbl-side-home">◀ Links</span>
       </div>
-      <!-- U9: beide an der Grundlinie — Portrait: links/rechts, Landscape: oben/unten -->
+      <!-- U9: beide an der Grundlinie — links/rechts -->
       <div class="dbl-players-row">
         <div class="dbl-player-slot" id="dbl-h1-slot">
           <div class="dbl-player-name" id="dbl-h1-name">H1</div>
@@ -766,7 +573,7 @@
         <span class="zone-heim-gast gast">Gast</span>
         <span class="zone-side-label" id="dbl-side-guest">▶ Rechts</span>
       </div>
-      <!-- U9: beide Spieler an der Grundlinie — Portrait: links/rechts, Landscape: oben/unten -->
+      <!-- U9: beide Spieler an der Grundlinie — links/rechts -->
       <div class="dbl-players-row">
         <div class="dbl-player-slot" id="dbl-g1-slot">
           <div class="dbl-player-name" id="dbl-g1-name">G1</div>
@@ -957,7 +764,7 @@
         <div class="rule-item"><div class="rule-dot"></div><div>Oben <strong>Einzel</strong> oder <strong>Doppel</strong> auswählen.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Die <strong>Namen der Spieler</strong> (oder Teams) eingeben — oder leer lassen für „Heim" / „Gast".</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Festlegen, wer <strong>zuerst aufschlägt</strong> (nach dem Ausknobeln).</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>⇄ Startseiten tauschen</strong> die Feldhälften anpassen, falls Heim nicht links startet.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>⇄ Startseiten tauschen</strong> die Feldhälften anpassen, falls Heim nicht oben startet.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Auf <strong>▶ Einzel / Doppel starten</strong> tippen — das Spiel beginnt.</div></div>
       </div>
     </div>
@@ -968,8 +775,7 @@
         <span class="rule-card-title">Punkte zählen</span>
       </div>
       <div class="rule-card-body">
-        <div class="rule-item"><div class="rule-dot"></div><div>Im Hochformat: <strong>obere Hälfte</strong> = Heim, <strong>untere Hälfte</strong> = Gast.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Im Querformat: <strong>linke Hälfte</strong> = Heim, <strong>rechte Hälfte</strong> = Gast.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Obere Hälfte</strong> = Heim, <strong>untere Hälfte</strong> = Gast.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Einfach auf die <strong>Feldhälfte des Punktgewinners tippen</strong> — die App zählt automatisch.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Der <strong>gelbe Punkt</strong> (🟡) zeigt, wer gerade aufschlägt.</div></div>
         <div class="rule-highlight"><strong>Tipp</strong>Immer die Seite des Kindes antippen, das den Punkt gewonnen hat — egal wer aufgeschlagen hat.</div>
@@ -1050,13 +856,12 @@
       <div class="rule-card-body">
         <div class="rule-item"><div class="rule-dot"></div><div>App zum <strong>Home-Bildschirm hinzufügen</strong>: Chrome → Menü (⋮) → „Zum Startbildschirm hinzufügen".</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Dann startet die App wie eine native App — ohne Browser-Leiste und im Vollbild.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Das <strong>Querformat</strong> (Handy drehen) zeigt das Spielfeld wie beim Blick von der Seite übers Netz.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Bildschirm-Timeout: am besten <strong>Bildschirm aktiv lassen</strong> aktivieren (Einstellungen → Entwickleroptionen → Bildschirm aktiv lassen) oder Display-Timeout auf Maximum setzen, damit der Bildschirm während des Spiels nicht ausgeht.</div></div>
       </div>
     </div>
 
   </div>
-  <div class="rules-footer">BTV U9 Kleinfeld Score · Android 1.2 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">BTV U9 Kleinfeld Score · Android 1.3 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ WINNER ══ -->
@@ -1205,7 +1010,7 @@ function swapSetupSides() {
   setupSidesSwapped = !setupSidesSwapped;
   const btn = document.querySelector('.btn-setup-swap');
   btn.textContent = setupSidesSwapped
-    ? '⇄ Heim rechts / Gast links (tippen zum Zurücksetzen)'
+    ? '⇄ Heim unten / Gast oben (tippen zum Zurücksetzen)'
     : '⇄ Startseiten tauschen (nach Ausknobeln)';
   btn.style.background = setupSidesSwapped ? 'var(--yellow-bg)' : '';
   btn.style.borderColor = setupSidesSwapped ? '#f0d070' : '';
@@ -1596,15 +1401,15 @@ function exportPDF() {
 
     <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
     <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
-    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (Android 1.2) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (Android 1.3) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
   `;
 
   document.getElementById('pdf-area').innerHTML = html;
 
   const slug = s => s.replace(/\s+/g, '-');
   const filename = r.modus === 'Doppel'
-    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_Android-1.2`
-    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_Android-1.2`;
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_Android-1.3`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_Android-1.3`;
   const originalTitle = document.title;
   document.title = filename;
   setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
@@ -1686,12 +1491,10 @@ function renderAll() {
   const showSideBanner = (phase==='set'||phase==='tiebreak') && (gamesInSet===1||gamesInSet===3||gamesInSet===5||gamesInSet===7);
   document.getElementById('side-banner').classList.toggle('visible', showSideBanner);
 
-  // Update tap hints based on orientation
-  const isLandscape = window.innerWidth > window.innerHeight;
   const tapHome = document.querySelector('#zone-home .tap-hint');
   const tapGuest = document.querySelector('#zone-guest .tap-hint');
-  if (tapHome) tapHome.textContent = isLandscape ? '◀ Tippen für Punkt' : '▲ Tippen für Punkt';
-  if (tapGuest) tapGuest.textContent = isLandscape ? 'Tippen für Punkt ▶' : '▼ Tippen für Punkt';
+  if (tapHome) tapHome.textContent = '▲ Tippen für Punkt';
+  if (tapGuest) tapGuest.textContent = '▼ Tippen für Punkt';
 
   document.getElementById('menu-score-text').textContent =
     `${names.home} (Heim) ${sets.home}:${sets.guest} ${names.guest} (Gast)\nSpiele: ${games.home}:${games.guest}\nAufschlag: ${names[serving]}\n${names.home}: ${homeLeft?'Links':'Rechts'} · ${names.guest}: ${homeLeft?'Rechts':'Links'}`;
@@ -1769,7 +1572,6 @@ function showCourt(mode) {
   document.getElementById('btn-player-change').style.display = mode === 'doppel' ? '' : 'none';
 }
 window.addEventListener('resize', () => { if (document.getElementById('score').classList.contains('active')) renderCurrent(); });
-window.addEventListener('orientationchange', () => { setTimeout(() => { if (document.getElementById('score').classList.contains('active')) renderCurrent(); }, 100); });
 
 // ══════════════════════════════════════════════
 //  MODE (Einzel / Doppel)
@@ -2193,20 +1995,14 @@ function renderDoppel() {
   // Seitenwechsel: visualSwapped tauscht Feldhälften, logische Deuce/Ad bleiben.
   const servSide = ds.pointInGame % 2 === 0 ? 'right' : 'left'; // Deuce=rechts, Ad=links
   const partnerSide = servSide === 'right' ? 'left' : 'right';
-  const isLandscape = window.innerWidth > window.innerHeight;
 
   // Slot→Tennis-Seite: Deuce ist immer rechts vom jeweiligen Team aus dessen
   // Spielperspektive → diagonale Anordnung auf dem Bildschirm. Nach Seitenwechsel
   // (visualSwapped) tauschen p1/p2 ihre Tennis-Seiten je Team.
   const slotSidesForTeam = (team) => {
-    let sides;
-    if (team === 'home') {
-      sides = isLandscape ? { p1: 'left',  p2: 'right' }
-                          : { p1: 'right', p2: 'left'  };
-    } else {
-      sides = isLandscape ? { p1: 'right', p2: 'left'  }
-                          : { p1: 'left',  p2: 'right' };
-    }
+    const sides = team === 'home'
+      ? { p1: 'right', p2: 'left' }
+      : { p1: 'left',  p2: 'right' };
     if (ds.visualSwapped) {
       return { p1: sides.p2, p2: sides.p1 };
     }
@@ -2216,11 +2012,7 @@ function renderDoppel() {
   // Pfeil zeigt zur Außenkante des Slots; Wort hängt von der Tennis-Seite ab.
   const slotLabel = (slotNum, tennisSide) => {
     const word = tennisSide === 'right' ? 'Deuce' : 'Ad';
-    if (isLandscape) {
-      return slotNum === 1 ? `▲ ${word}` : `${word} ▼`;
-    } else {
-      return slotNum === 1 ? `◀ ${word}` : `${word} ▶`;
-    }
+    return slotNum === 1 ? `◀ ${word}` : `${word} ▶`;
   };
 
   ['home','guest'].forEach(team => {

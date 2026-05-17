@@ -1528,15 +1528,21 @@ function triggerSideModal(cb) {
   sideModalCb = cb;
   let reason;
   if (currentMode === 'doppel') {
-    const isDblMatch = dblState.phase === 'matchtb';
-    reason = isDblMatch
-      ? `Match-Tiebreak: ${dblState.tbPoints.home}:${dblState.tbPoints.guest} (${dblState.tbTotal} Punkte gespielt)`
-      : `Spielstand: ${dblState.games.home}:${dblState.games.guest} (${dblState.gamesInSet} Spiele)`;
+    const isDblTB = dblState.phase === 'tiebreak' || dblState.phase === 'matchtb';
+    if (isDblTB) {
+      const tbType = dblState.phase === 'matchtb' ? 'Match-Tiebreak' : 'Satz-Tiebreak';
+      reason = `${tbType}: ${dblState.tbPoints.home}:${dblState.tbPoints.guest} (${dblState.tbTotal} Punkte gespielt)`;
+    } else {
+      reason = `Spielstand: ${dblState.games.home}:${dblState.games.guest} (${dblState.gamesInSet} Spiele)`;
+    }
   } else {
-    const isMatch = state.phase === 'matchtb';
-    reason = isMatch
-      ? `Match-Tiebreak: ${state.tbPoints.home}:${state.tbPoints.guest} (${state.tbTotal} Punkte gespielt)`
-      : `Spielstand: ${state.games.home}:${state.games.guest} (${state.gamesInSet} Spiele)`;
+    const isTB = state.phase === 'tiebreak' || state.phase === 'matchtb';
+    if (isTB) {
+      const tbType = state.phase === 'matchtb' ? 'Match-Tiebreak' : 'Satz-Tiebreak';
+      reason = `${tbType}: ${state.tbPoints.home}:${state.tbPoints.guest} (${state.tbTotal} Punkte gespielt)`;
+    } else {
+      reason = `Spielstand: ${state.games.home}:${state.games.guest} (${state.gamesInSet} Spiele)`;
+    }
   }
   document.getElementById('side-modal-text').textContent = `${reason}\n\nDie Spieler wechseln jetzt die Seite!`;
   if (currentMode === 'doppel') renderDoppel(); else renderAll();

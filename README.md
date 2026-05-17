@@ -10,8 +10,8 @@ Entwickelt für Eltern, die während eines Spiels mitzählen und andere Eltern o
 
 ### Dateien
 
-- [tennis-score/btv_u9_score_ios.html](tennis-score/btv_u9_score_ios.html) — für iPhone / iPad optimiert (Version 1.3)
-- [tennis-score/btv_u9_score_android.html](tennis-score/btv_u9_score_android.html) — für Android optimiert (Version 1.3)
+- [tennis-score/btv_u9_score_ios.html](tennis-score/btv_u9_score_ios.html) — für iPhone / iPad optimiert (Version 1.4)
+- [tennis-score/btv_u9_score_android.html](tennis-score/btv_u9_score_android.html) — für Android optimiert (Version 1.4)
 
 ### Funktionen
 
@@ -26,6 +26,12 @@ Entwickelt für Eltern, die während eines Spiels mitzählen und andere Eltern o
 - In-Spiel-Menü für Zugriff auf Regelguide und Bedienung ohne Spielunterbrechung
 
 ### Changelog
+
+**Version 1.4** (2026-05-17)
+
+- Bugfix: Seitenwechsel im Match-Tiebreak findet nun korrekt nach jeweils 6 gespielten Punkten in Summe statt (6, 12, 18, …) — vorher nur einmal bei 6
+- Modal-Text beim Seitenwechsel zeigt nun die tatsächlich gespielten Punkte (`12 Punkte gespielt` statt fest `6 Punkte gespielt`)
+- Neuer Querformat-Hinweis: Vollbild-Overlay erscheint im Querformat mit Aufforderung, das Gerät ins Hochformat zu drehen (CSS-only, kein JS)
 
 **Version 1.3** (2026-05-17)
 

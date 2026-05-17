@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#2e7d52">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232e7d52' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>S</text></svg>">
+  <title>BTV U9 Kleinfeld Score</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #2e7d52 0%, #1a6b40 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+    .container {
+      text-align: center;
+      max-width: 500px;
+    }
+    .logo {
+      font-size: 80px;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .button {
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .button.primary {
+      background: white;
+      color: #2e7d52;
+    }
+    .button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .button.secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+    }
+    .button.secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .info {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .version {
+      margin-top: 40px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    .device-indicator {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🎾</div>
+    <h1>BTV U9 Kleinfeld Score</h1>
+    <div class="subtitle">
+      Tennis-Scoring-App für<br>BTV/DTB U9 Turniere
+    </div>
+
+    <div class="button-group">
+      <a href="tennis-score/ios/index.html" class="button primary">
+        iOS-Version
+      </a>
+      <a href="tennis-score/android/btv_u9_score_android.html" class="button secondary">
+        Android-Version
+      </a>
+    </div>
+
+    <div class="device-indicator" id="deviceIndicator">
+      Automatische Erkennung lädt...
+    </div>
+
+    <div class="info">
+      <strong>💡 Tipp für iPhone:</strong><br>
+      Tippe das Teilen-Symbol (↗) und wähle „Zum Home-Bildschirm hinzufügen", um die App wie eine native App zu verwenden.
+    </div>
+
+    <div class="version">
+      Version 1.4 · Powered by GitHub Pages
+    </div>
+  </div>
+
+  <script>
+    // Registriere Service Worker für Offline-Unterstützung
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => {
+          console.log('Service Worker registered:', reg);
+        })
+        .catch(err => {
+          console.log('Service Worker registration failed:', err);
+        });
+    }
+
+    // Erkenne das Gerät und zeige Hinweis
+    function detectDevice() {
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const isAndroid = /Android/.test(ua);
+      const indicator = document.getElementById('deviceIndicator');
+
+      if (isIOS) {
+        indicator.textContent = '📱 iPhone/iPad erkannt';
+        // Bei iOS automatisch zur iOS-Version weiterleiten (optional)
+      } else if (isAndroid) {
+        indicator.textContent = '🤖 Android erkannt';
+        // Bei Android automatisch zur Android-Version weiterleiten (optional)
+      } else {
+        indicator.textContent = '💻 Browser (Desktop)';
+      }
+    }
+
+    detectDevice();
+
+    // Debug: Logging
+    console.log('BTV Score App loaded');
+    console.log('Service Worker support:', 'serviceWorker' in navigator);
+    console.log('PWA manifest:', document.querySelector('link[rel="manifest"]')?.href);
+  </script>
+</body>
+</html>

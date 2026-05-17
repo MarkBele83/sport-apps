@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2e7d52">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232e7d52' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>S</text></svg>">
+<title>BTV U9 Kleinfeld Score · iOS 1.4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+
+  :root {
+    --green:      #2e7d52;
+    --green-light:#e8f5ee;
+    --green-mid:  #c5e5d3;
+    --accent:     #1a6b40;
+    --blue:       #2c5fbb;
+    --blue-light: #e8eef8;
+    --yellow:     #e8a800;
+    --yellow-bg:  #fff8e1;
+    --text:       #1a2e22;
+    --text-mid:   #4a6455;
+    --text-light: #8aab98;
+    --bg:         #f4f8f5;
+    --white:      #ffffff;
+    --border:     #d4e6da;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; min-height: -webkit-fill-available;
+    display: -webkit-flex; display: flex;
+    -webkit-flex-direction: column; flex-direction: column;
+    overflow: hidden; position: fixed; width: 100%; height: 100%;
+  }
+
+  .screen { display: none; flex-direction: column; height: 100%; }
+  .screen.active { display: flex; }
+
+  /* ══════════ SETUP ══════════ */
+  #setup {
+    background: #ffffff;
+    padding: 20px 20px 16px;
+    gap: 12px; align-items: center; justify-content: center; overflow-y: auto;
+  }
+
+  .logo { text-align: center; }
+  .logo .btv { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 4px; color: var(--green); }
+  .logo h1  { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; letter-spacing: 2px; color: var(--text); }
+  .logo .sub { font-size: 10px; color: var(--text-light); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .logo .platform-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #f0f0f5; border: 1px solid #d0d0e0; border-radius: 20px;
+    padding: 4px 10px; font-size: 11px; color: #555; margin-top: 6px;
+    font-family: 'DM Sans', sans-serif; letter-spacing: 0;
+  }
+  .logo .platform-badge .plat-icon { font-size: 13px; }
+
+  .setup-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; width: 100%; max-width: 380px;
+    display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 2px 12px rgba(30,80,50,0.07);
+  }
+
+  .setup-card .field-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-light); display: block; margin-bottom: 5px;
+  }
+
+  .name-row {
+    display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center;
+  }
+  .side-badge {
+    background: var(--green-light); border: 1px solid var(--green-mid);
+    border-radius: 8px; padding: 8px 4px; text-align: center;
+    font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase;
+    line-height: 1.3;
+  }
+  .side-badge.guest-badge { background: var(--blue-light); border-color: #b8cef0; color: var(--blue); }
+
+  .setup-card input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; font-size: 16px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s;
+  }
+  .setup-card input:focus { border-color: var(--green); }
+  .setup-card input::placeholder { color: var(--text-light); }
+
+  .toggle-row { display: flex; gap: 8px; }
+  .toggle-btn {
+    flex: 1; padding: 10px 6px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text-mid); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer; transition: all 0.15s; text-align: center; line-height: 1.35;
+  }
+  .toggle-btn.active { background: var(--green-light); border-color: var(--green); color: var(--accent); font-weight: 600; }
+
+  .rules-box {
+    background: var(--yellow-bg); border: 1px solid #f0d070; border-radius: 10px;
+    padding: 10px 13px; font-size: 10px; color: #7a5e00; line-height: 1.7;
+    width: 100%; max-width: 380px;
+  }
+  .rules-box strong { color: var(--yellow); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+  .btn-start {
+    background: var(--green); color: #fff; border: none; border-radius: 14px;
+    padding: 15px 32px; font-family: 'Bebas Neue', sans-serif; font-size: 24px;
+    letter-spacing: 2px; cursor: pointer; width: 100%; max-width: 380px;
+    box-shadow: 0 4px 14px rgba(30,100,60,0.2);
+  }
+  .btn-start:active { opacity: 0.88; transform: scale(0.98); }
+
+  /* ══════════ SCORE SCREEN ══════════ */
+  #score { background: var(--bg); flex-direction: column; }
+
+  .score-header {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 9px 14px 7px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .score-header .title { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--green); }
+  .score-header .status { font-size: 11px; color: var(--text-light); }
+  .header-btns { display: flex; gap: 6px; }
+  .btn-header { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text-mid); font-size: 12px; padding: 4px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-header.back { color: var(--accent); border-color: var(--green-mid); }
+
+  /* Scoreboard */
+  .scoreboard { background: var(--white); border-bottom: 1px solid var(--border); padding: 8px 14px; flex-shrink: 0; }
+  .scoreboard-header { display: grid; grid-template-columns: 1fr 38px 38px 38px 58px; gap: 4px; padding-bottom: 3px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
+  .scoreboard-header span { text-align: center; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); }
+  .scoreboard-header span:first-child { text-align: left; }
+  .scoreboard-row { display: grid; grid-template-columns: 1fr 38px 38px 38px 58px; gap: 4px; align-items: center; padding: 3px 0; }
+
+  .player-label-cell { display: flex; flex-direction: column; overflow: hidden; }
+  .player-side-tag { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); line-height: 1; margin-bottom: 1px; }
+  .player-side-tag.heim { color: var(--accent); }
+  .player-side-tag.gast { color: var(--blue); }
+  .player-name-sb { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+
+  .set-score { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-light); line-height: 1; }
+  .set-score.current { color: var(--text); }
+  .set-score.won { color: var(--green); font-size: 22px; }
+  .tb-small { font-size: 10px; font-family: 'DM Sans', sans-serif; vertical-align: super; margin-left: 1px; opacity: 0.75; }
+  .game-score { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--text); background: var(--green-light); border-radius: 8px; padding: 2px 4px; line-height: 1.2; }
+
+  /* Phase banner */
+  .phase-banner { text-align: center; padding: 5px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; flex-shrink: 0; font-weight: 500; }
+  .phase-banner.normal { background: var(--yellow-bg); border-top: 1px solid #f0d070; border-bottom: 1px solid #f0d070; color: #9a7000; }
+  .phase-banner.tiebreak { background: #fff0e6; border-top: 1px solid #f5c090; border-bottom: 1px solid #f5c090; color: #c04000; }
+  .phase-banner.matchtb { background: #fce8e8; border-top: 1px solid #f0a0a0; border-bottom: 1px solid #f0a0a0; color: #a00000; }
+
+  /* Seitenwechsel banner */
+  .side-change-banner { display: none; background: var(--green); color: #fff; text-align: center; padding: 10px 14px; flex-shrink: 0; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; animation: pulse 1s ease infinite alternate; }
+  .side-change-banner.visible { display: block; }
+  @keyframes pulse { from { background: var(--green); } to { background: var(--accent); } }
+
+  /* Court */
+  .court-area { flex: 1; display: grid; grid-template-rows: 1fr 1fr; gap: 4px; padding: 10px; min-height: 0; }
+
+  .player-zone {
+    border-radius: 16px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    position: relative; overflow: hidden; transition: transform 0.08s; user-select: none;
+    -webkit-user-select: none; touch-action: manipulation;
+    border: 2px solid transparent; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .player-zone:active { transform: scale(0.98); }
+  .player-zone.home { background: linear-gradient(145deg, #eef7f2, #d8f0e4); }
+  .player-zone.guest { background: linear-gradient(145deg, #eef3fc, #ddeaf8); }
+
+  .serve-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--yellow); position: absolute; top: 12px; right: 12px; box-shadow: 0 0 8px rgba(232,168,0,0.6); opacity: 0; transition: opacity 0.25s; }
+  .player-zone.serving .serve-dot { opacity: 1; }
+
+  .zone-top-row { position: absolute; top: 10px; left: 12px; right: 32px; display: flex; align-items: center; gap: 6px; }
+  .zone-heim-gast { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+  .zone-heim-gast.heim { background: rgba(46,125,82,0.15); color: var(--accent); }
+  .zone-heim-gast.gast { background: rgba(44,95,187,0.15); color: var(--blue); }
+  .zone-side-label { font-size: 9px; color: var(--text-light); letter-spacing: 1px; }
+  .zone-deuce-ad {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(46,125,82,0.15);
+    padding: 2px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: none;
+  }
+  .player-zone.serving .zone-deuce-ad { display: inline-block; }
+
+  .zone-name { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; text-align: center; padding: 0 12px; margin-top: 16px; }
+  .point-display { font-family: 'Bebas Neue', sans-serif; font-size: 74px; line-height: 1; color: var(--text); }
+  .tap-hint { position: absolute; bottom: 9px; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); }
+
+  /* Bottom bar */
+  .bottom-bar { display: flex; gap: 8px; padding: 8px 10px 14px; flex-shrink: 0; }
+  .btn-undo { flex: 1; background: var(--white); border: 1px solid var(--border); border-radius: 12px; color: var(--text-mid); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 12px; cursor: pointer; }
+  .btn-serve-manual { flex: 1; background: var(--yellow-bg); border: 1px solid #f0d070; border-radius: 12px; color: #9a7000; font-family: 'DM Sans', sans-serif; font-size: 11px; padding: 8px; cursor: pointer; text-align: center; line-height: 1.4; }
+
+  /* ══════════ MODALS ══════════ */
+  .modal-overlay { display: none; position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(20,60,30,0.4); z-index: 100; align-items: center; justify-content: center; padding: 20px; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 24px 22px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 2px; color: var(--accent); margin-bottom: 6px; }
+  .modal p { font-size: 14px; color: var(--text-mid); margin-bottom: 18px; line-height: 1.6; white-space: pre-line; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-primary { flex: 1; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; cursor: pointer; }
+  .btn-secondary { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; color: var(--text-mid); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; }
+  .btn-blue { background: var(--blue); color: #fff; }
+  #modal-side .modal { border: 3px solid var(--green); }
+  #modal-side .modal h2 { color: var(--green); font-size: 36px; }
+
+  /* ══════════ ORIENTATION HINT ══════════ */
+  #orientation-hint {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 9999;
+    background: rgba(20,60,30,0.92);
+    color: #fff;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  #orientation-hint .ohint-icon { font-size: 64px; margin-bottom: 16px; }
+  #orientation-hint .ohint-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; margin-bottom: 12px; }
+  #orientation-hint .ohint-text  { font-size: 16px; line-height: 1.5; max-width: 320px; }
+
+  @media (orientation: landscape) {
+    #orientation-hint { display: flex; }
+  }
+
+  /* ══════════ WINNER ══════════ */
+  #winner {
+    background: linear-gradient(160deg, #e0f2e8 0%, #f4f8f5 100%);
+    align-items: center; justify-content: center; padding: 28px 24px; gap: 14px; text-align: center; overflow-y: auto;
+  }
+  #winner .trophy { font-size: 60px; animation: bounce 1s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  #winner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 4px; color: var(--text-light); }
+  #winner .winner-name { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--accent); letter-spacing: 2px; line-height: 1; }
+  #winner .final-score-display { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; width: 100%; max-width: 340px; }
+  #winner .final-score-display .score-line { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-mid); letter-spacing: 1px; margin-bottom: 4px; }
+  #winner .final-score-display .score-detail { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+  .winner-btns { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 340px; }
+  .btn-pdf { background: var(--accent); color: #fff; border: none; border-radius: 14px; padding: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 4px 14px rgba(30,100,60,0.2); }
+  .btn-new-match { background: var(--white); color: var(--text-mid); border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer; }
+
+  /* PDF hidden print area */
+  #pdf-area { display: none; }
+
+  @media print {
+    body > * { display: none !important; }
+    #pdf-area { display: block !important; padding: 24px; font-family: 'DM Sans', Arial, sans-serif; color: #1a2e22; }
+    #pdf-area h1 { font-size: 28px; margin-bottom: 4px; }
+    #pdf-area .pdf-sub { font-size: 13px; color: #666; margin-bottom: 20px; }
+    #pdf-area table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    #pdf-area th { background: #e8f5ee; padding: 8px 12px; text-align: left; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border: 1px solid #d4e6da; }
+    #pdf-area td { padding: 10px 12px; border: 1px solid #d4e6da; font-size: 15px; }
+    #pdf-area .winner-row { background: #f0faf5; font-weight: 700; }
+    #pdf-area .pdf-result { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    #pdf-area .pdf-footer { font-size: 11px; color: #999; margin-top: 24px; }
+  }
+
+  /* ══════════ RULES SCREEN ══════════ */
+  #rules, #howto {
+    background: #ffffff;
+    overflow-y: auto;
+    flex-direction: column;
+  }
+
+  .rules-header {
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0; position: sticky; top: 0; z-index: 10;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .rules-header h2 { font-family: "Bebas Neue", sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--green); flex: 1; }
+  .btn-rules-back { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text-mid); font-family: "DM Sans", sans-serif; font-size: 13px; padding: 6px 12px; cursor: pointer; }
+
+  .rules-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  .rule-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .rule-card-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; background: var(--green-light);
+    border-bottom: 1px solid var(--border);
+  }
+  .rule-card-icon { font-size: 20px; }
+  .rule-card-title { font-family: "Bebas Neue", sans-serif; font-size: 17px; letter-spacing: 1.5px; color: var(--accent); }
+  .rule-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .rule-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.55; color: var(--text-mid); }
+  .rule-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 6px; }
+  .rule-item strong { color: var(--text); }
+  .rule-highlight {
+    background: var(--yellow-bg); border: 1px solid #f0d070; border-radius: 8px;
+    padding: 8px 12px; font-size: 12px; color: #7a5e00; line-height: 1.6;
+  }
+  .rule-highlight strong { color: #9a7000; display: block; margin-bottom: 2px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .rules-footer { text-align: center; padding: 12px 16px 24px; font-size: 10px; color: var(--text-light); line-height: 1.7; }
+  .copyright-note {
+    text-align: center; font-size: 9px; color: var(--text-light);
+    padding: 8px 16px 0; line-height: 1.6; max-width: 380px; margin: 0 auto;
+  }
+
+  .btn-rules-open {
+    background: var(--white); color: var(--accent); border: 1px solid var(--green-mid);
+    border-radius: 12px; padding: 11px 16px; font-family: "DM Sans", sans-serif;
+    font-size: 13px; cursor: pointer; width: 100%; max-width: 380px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+
+  /* Querformat-Layout zurückgestellt — siehe TODO.md */
+
+  /* Visual side swap in court (Hochformat) */
+  .court-area.swapped #zone-home { order: 2; }
+  .court-area.swapped #zone-guest { order: 1; }
+
+  /* Visual side swap im Doppel (Hochformat) */
+  #court-doppel.swapped #dbl-zone-home  { order: 2; }
+  #court-doppel.swapped #dbl-zone-guest { order: 1; }
+
+  .btn-side-change {
+    flex: 1; background: rgba(46,125,82,0.1); border: 1px solid var(--green-mid);
+    border-radius: 12px; color: var(--accent); font-family: "DM Sans", sans-serif;
+    font-size: 11px; padding: 8px; cursor: pointer; text-align: center; line-height: 1.4;
+  }
+
+  /* Setup: side swap button */
+  .btn-setup-swap {
+    background: var(--green-light); border: 1px solid var(--green-mid);
+    border-radius: 10px; padding: 9px 14px; font-family: "DM Sans", sans-serif;
+    font-size: 13px; color: var(--accent); cursor: pointer; width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 500;
+  }
+
+
+  /* ══ DOPPEL team zone layout ══ */
+  /* Spieler nebeneinander (links=Ad, rechts=Deuce) — Draufsicht */
+
+  .dbl-team-zone {
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* Player row: side by side */
+  .dbl-players-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .dbl-player-slot {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.35); gap: 2px; padding: 4px 6px;
+    transition: background 0.2s;
+  }
+  /* Vertical divider between players */
+  .dbl-player-slot + .dbl-player-slot {
+    border-left: 1px solid rgba(46,125,82,0.25);
+  }
+  .dbl-player-slot.is-server {
+    background: rgba(232,168,0,0.2);
+    border-bottom: 3px solid var(--yellow);
+  }
+  .dbl-player-name { font-size: 12px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.2; }
+  .dbl-player-pos  { font-size: 8px; color: var(--text-light); letter-spacing: 0.5px; text-transform: uppercase; }
+  .dbl-serve-badge { font-size: 8px; color: var(--yellow); font-weight: 700; }
+
+  /* Score and serve info */
+  .dbl-serve-info {
+    font-size: 9px; color: var(--accent); font-weight: 600;
+    padding: 2px 6px; background: rgba(46,125,82,0.1); border-radius: 4px;
+    text-align: center; min-height: 14px; width: 100%; flex-shrink: 0;
+  }
+  .dbl-point { font-size: 40px !important; margin: 2px 0 !important; }
+
+  .dbl-team-zone .zone-top-row { top: 4px; }
+
+  /* Doppel scoreboard */
+  .player-name-sb.dbl-team { font-size: 11px; }
+
+</style>
+</head>
+<body>
+
+<!-- ══ SETUP ══ -->
+<div id="setup" class="screen active">
+  <div class="logo">
+    <div style="font-size:34px;margin-bottom:4px">🎾</div>
+    <div class="btv">BTV Kleinfeld U9</div>
+    <h1>Score</h1>
+    <div class="sub">BTV Südbayern 2026</div>
+    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.4</div>
+  </div>
+  <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+
+  <!-- Mode selector -->
+  <div class="toggle-row" style="width:100%;max-width:380px">
+    <button class="toggle-btn active" id="mode-einzel" onclick="setMode('einzel')" style="font-size:15px;padding:12px">🎾 Einzel</button>
+    <button class="toggle-btn" id="mode-doppel" onclick="setMode('doppel')" style="font-size:15px;padding:12px">👥 Doppel</button>
+  </div>
+
+  <!-- EINZEL setup -->
+  <div id="setup-einzel" class="setup-card">
+    <div>
+      <span class="field-label">Spieler</span>
+      <div class="name-row">
+        <div class="side-badge">Heim<br>oben</div>
+        <input type="text" id="name-home" placeholder="Name Heimspieler" maxlength="16" oninput="updateServeButtonLabels('einzel')">
+      </div>
+    </div>
+    <div>
+      <div class="name-row">
+        <div class="side-badge guest-badge">Gast<br>unten</div>
+        <input type="text" id="name-guest" placeholder="Name Gastspieler" maxlength="16" oninput="updateServeButtonLabels('einzel')">
+      </div>
+    </div>
+    <div>
+      <span class="field-label">Aufschlag zu Beginn (nach Ausknobeln)</span>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="serve-p1" onclick="setFirstServe('home')">🎾 Heim</button>
+        <button class="toggle-btn" id="serve-p2" onclick="setFirstServe('guest')">🎾 Gast</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOPPEL setup -->
+  <div id="setup-doppel" class="setup-card" style="display:none">
+    <div>
+      <span class="field-label">Heim-Team (oben / links)</span>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <input type="text" id="dbl-h1" placeholder="Heim Spieler 1" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+        <input type="text" id="dbl-h2" placeholder="Heim Spieler 2" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+      </div>
+    </div>
+    <div>
+      <span class="field-label">Gast-Team (unten / rechts)</span>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <input type="text" id="dbl-g1" placeholder="Gast Spieler 1" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+        <input type="text" id="dbl-g2" placeholder="Gast Spieler 2" maxlength="14" oninput="updateServeButtonLabels('doppel')">
+      </div>
+    </div>
+    <div>
+      <span class="field-label">Welches Team schlägt zuerst auf?</span>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="dbl-serve-home" onclick="setDblFirstServe('home')">🎾 Heim</button>
+        <button class="toggle-btn" id="dbl-serve-guest" onclick="setDblFirstServe('guest')">🎾 Gast</button>
+      </div>
+    </div>
+    <div>
+      <span class="field-label">Erster Aufschläger im Heim-Team</span>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="dbl-first-h1" onclick="setDblFirstPlayer('home',1)">Spieler 1</button>
+        <button class="toggle-btn" id="dbl-first-h2" onclick="setDblFirstPlayer('home',2)">Spieler 2</button>
+      </div>
+    </div>
+    <div>
+      <span class="field-label">Erster Aufschläger im Gast-Team</span>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="dbl-first-g1" onclick="setDblFirstPlayer('guest',1)">Spieler 1</button>
+        <button class="toggle-btn" id="dbl-first-g2" onclick="setDblFirstPlayer('guest',2)">Spieler 2</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-setup-swap" onclick="swapSetupSides()">⇄ Startseiten tauschen (nach Ausknobeln)</button>
+
+  <div class="rules-box">
+    <strong>BTV U9 Regeln</strong>
+    2 Kurzsätze mit 2 Spielen Vorsprung · No-Ad (40:40 → Rückschläger wählt Seite) · 4:4 → Satz-Tiebreak bis 7 (Rückschläger wählt Seite) · Bei 1:1 Sätzen → Match-Tiebreak bis 10 · Aufschlag wechselt nach jedem Spiel · Seitenwechsel bei Spielstand 1, 3, 5, 7 + nach jedem Satz + bei 6 Punkten im Match-Tiebreak
+  </div>
+
+  <div style="display:flex;gap:8px;width:100%;max-width:380px">
+    <button class="btn-rules-open" style="flex:1" onclick="rulesReturnTarget='setup'; showScreen('rules')">📋 Regelguide</button>
+    <button class="btn-rules-open" style="flex:1" onclick="rulesReturnTarget='setup'; showScreen('howto')">📱 Bedienung</button>
+  </div>
+  <button class="btn-start" id="btn-start" onclick="startGame()">▶ Einzel starten</button>
+</div>
+
+<!-- ══ SCORE ══ -->
+<div id="score" class="screen">
+  <div class="score-header">
+    <div class="title">U9 Kleinfeld</div>
+    <div class="status" id="phase-label">Satz 1</div>
+    <div class="header-btns">
+      <button class="btn-header back" onclick="goToSetup()">← Namen</button>
+      <button class="btn-header" onclick="showMenu()">Menü</button>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="scoreboard-header">
+      <span>Spieler</span><span>S1</span><span>S2</span><span>MT</span><span>Spiel</span>
+    </div>
+    <div class="scoreboard-row">
+      <div class="player-label-cell">
+        <span class="player-side-tag heim">Heim</span>
+        <span class="player-name-sb" id="sb-name-home">–</span>
+      </div>
+      <div class="set-score" id="sb-s1-home">–</div>
+      <div class="set-score" id="sb-s2-home">–</div>
+      <div class="set-score" id="sb-s3-home">–</div>
+      <div class="game-score" id="sb-game-home">0</div>
+    </div>
+    <div class="scoreboard-row">
+      <div class="player-label-cell">
+        <span class="player-side-tag gast">Gast</span>
+        <span class="player-name-sb" id="sb-name-guest">–</span>
+      </div>
+      <div class="set-score" id="sb-s1-guest">–</div>
+      <div class="set-score" id="sb-s2-guest">–</div>
+      <div class="set-score" id="sb-s3-guest">–</div>
+      <div class="game-score" id="sb-game-guest">0</div>
+    </div>
+  </div>
+
+  <div class="phase-banner normal" id="phase-banner">Kurzsatz 1 · Min. 4 Spiele · 2 Vorsprung · No-Ad</div>
+  <div class="side-change-banner" id="side-banner">⇄ SEITENWECHSEL ⇄</div>
+
+  <div class="court-area" id="court-area">
+    <!-- EINZEL zones (default) -->
+    <div class="player-zone home" id="zone-home" onclick="scorePoint('home')">
+      <div class="serve-dot"></div>
+      <div class="zone-top-row">
+        <span class="zone-heim-gast heim">Heim</span>
+        <span class="zone-side-label" id="side-home">◀ Links</span>
+        <span class="zone-deuce-ad" id="serving-side-home">Deuce</span>
+      </div>
+      <div class="zone-name" id="zone-name-home">Heimspieler</div>
+      <div class="point-display" id="point-home">0</div>
+      <div class="tap-hint" id="tap-home">▲ Tippen für Punkt</div>
+    </div>
+    <div class="player-zone guest" id="zone-guest" onclick="scorePoint('guest')">
+      <div class="serve-dot"></div>
+      <div class="zone-top-row">
+        <span class="zone-heim-gast gast">Gast</span>
+        <span class="zone-side-label" id="side-guest">▶ Rechts</span>
+        <span class="zone-deuce-ad" id="serving-side-guest">Deuce</span>
+      </div>
+      <div class="zone-name" id="zone-name-guest">Gastspieler</div>
+      <div class="point-display" id="point-guest">0</div>
+      <div class="tap-hint" id="tap-guest">▼ Tippen für Punkt</div>
+    </div>
+  </div>
+
+  <!-- DOPPEL court (hidden by default) -->
+  <!-- Stacked top/bottom (Heim oben, Gast unten) wie Einzel -->
+  <div class="court-area" id="court-doppel" style="display:none">
+    <!-- Heim team zone: 2 Spieler oben/unten -->
+    <div class="player-zone home dbl-team-zone" id="dbl-zone-home" onclick="scorePoint('home')">
+      <div class="serve-dot"></div>
+      <div class="zone-top-row">
+        <span class="zone-heim-gast heim">Heim</span>
+        <span class="zone-side-label" id="dbl-side-home">◀ Links</span>
+      </div>
+      <!-- U9: beide an der Grundlinie — links/rechts -->
+      <div class="dbl-players-row">
+        <div class="dbl-player-slot" id="dbl-h1-slot">
+          <div class="dbl-player-name" id="dbl-h1-name">H1</div>
+          <div class="dbl-player-pos" id="dbl-h1-pos">–</div>
+          <div class="dbl-serve-badge" id="dbl-h1-serve" style="display:none">🎾</div>
+        </div>
+        <div class="dbl-player-slot" id="dbl-h2-slot">
+          <div class="dbl-player-name" id="dbl-h2-name">H2</div>
+          <div class="dbl-player-pos" id="dbl-h2-pos">–</div>
+          <div class="dbl-serve-badge" id="dbl-h2-serve" style="display:none">🎾</div>
+        </div>
+      </div>
+      <div class="dbl-serve-info" id="dbl-home-serve-info"></div>
+      <div class="point-display dbl-point" id="dbl-point-home">0</div>
+    </div>
+    <!-- Gast team zone: 2 Spieler oben/unten -->
+    <div class="player-zone guest dbl-team-zone" id="dbl-zone-guest" onclick="scorePoint('guest')">
+      <div class="serve-dot"></div>
+      <div class="zone-top-row">
+        <span class="zone-heim-gast gast">Gast</span>
+        <span class="zone-side-label" id="dbl-side-guest">▶ Rechts</span>
+      </div>
+      <!-- U9: beide Spieler an der Grundlinie — links/rechts -->
+      <div class="dbl-players-row">
+        <div class="dbl-player-slot" id="dbl-g1-slot">
+          <div class="dbl-player-name" id="dbl-g1-name">G1</div>
+          <div class="dbl-player-pos" id="dbl-g1-pos">–</div>
+          <div class="dbl-serve-badge" id="dbl-g1-serve" style="display:none">🎾</div>
+        </div>
+        <div class="dbl-player-slot" id="dbl-g2-slot">
+          <div class="dbl-player-name" id="dbl-g2-name">G2</div>
+          <div class="dbl-player-pos" id="dbl-g2-pos">–</div>
+          <div class="dbl-serve-badge" id="dbl-g2-serve" style="display:none">🎾</div>
+        </div>
+      </div>
+      <div class="dbl-serve-info" id="dbl-guest-serve-info"></div>
+      <div class="point-display dbl-point" id="dbl-point-guest">0</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn-undo" onclick="undoPoint()">↩ Rückgängig</button>
+    <button class="btn-side-change" onclick="manualSwapSides()">⇄ Seiten<br>wechseln</button>
+    <button class="btn-serve-manual" onclick="manualToggleServe()">🎾 Aufschlag<br>wechseln</button>
+    <button class="btn-serve-manual" id="btn-player-change" onclick="manualTogglePlayer()" style="display:none">🔄 Spieler<br>wechseln</button>
+  </div>
+</div>
+
+
+<!-- ══ RULES ══ -->
+<div id="rules" class="screen">
+  <div class="rules-header">
+    <button class="btn-rules-back" onclick="returnFromRules()">← Zurück</button>
+    <h2>🎾 Regelguide U9</h2>
+  </div>
+
+  <div class="rules-content">
+
+    <!-- Zählweise -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🔢</span>
+        <span class="rule-card-title">Zählweise</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Punkte: <strong>0 → 15 → 30 → 40 → Spiel</strong></div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Ein <strong>Satz</strong> geht mindestens bis 4 Spiele mit <strong>2 Spielen Vorsprung</strong> (z.B. 4:2, 5:3).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>4:4</strong> → Satz-Tiebreak bis 7 Punkte (mind. 2 Punkte Vorsprung nötig).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>Satzgleichstand 1:1</strong> → Match-Tiebreak bis 10 Punkte (mind. 2 Punkte Vorsprung).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Gespielt werden <strong>2 Sätze</strong>. Wer zuerst 2 Sätze gewinnt, gewinnt das Match.</div></div>
+      </div>
+    </div>
+
+    <!-- No-Ad -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">⚡</span>
+        <span class="rule-card-title">No-Ad (bei 40:40)</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>40:40</strong> gibt es keinen Einstand/Vorteil wie im normalen Tennis.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der <strong>Rückschläger</strong> (der der empfängt) darf wählen, auf welche Seite aufgeschlagen wird.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Wer diesen einen Punkt gewinnt, gewinnt das Spiel — fertig!</div></div>
+        <div class="rule-highlight"><strong>Tipp für Eltern</strong>Wenn beide Kinder 40 haben, sagt das Kind das zurückspielt: „Ich möchte auf die Vorhand/Rückhand-Seite". Dann wird dieser eine Punkt gespielt.</div>
+      </div>
+    </div>
+
+    <!-- Aufschlag -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🎯</span>
+        <span class="rule-card-title">Aufschlag</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Jeder Spieler hat <strong>2 Aufschläge</strong> pro Punkt.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Aufschlag erfolgt <strong>diagonal</strong> ins gegnerische Aufschlagfeld — abwechselnd von rechts und links.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Südliga 2:</strong> Beim Unterhand-Aufschlag darf der Ball vorher aufspringen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Berührt der Ball die <strong>Netzkante</strong> beim Aufschlag → Wiederholung (kein Fehler).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschlag wechselt <strong>nach jedem Spiel</strong>.</div></div>
+      </div>
+    </div>
+
+    <!-- Seitenwechsel -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">⇄</span>
+        <span class="rule-card-title">Seitenwechsel</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Seitenwechsel wenn die <strong>Gesamtzahl gespielter Spiele</strong> im Satz ungerade ist: also nach Spielstand 1, 3, 5 oder 7.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Nach <strong>jedem Satz</strong> wechseln die Spieler die Seite.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Im Satz-Tiebreak und Match-Tiebreak: Seitenwechsel nach jeweils <strong>6 gespielten Punkten</strong> (6, 12, 18, …).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Vor dem Satz-Tiebreak und Match-Tiebreak: <strong>Rückschläger wählt</strong> auf welcher Seite er einschlägt.</div></div>
+      </div>
+    </div>
+
+    <!-- Ablauf Spieltag -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">📅</span>
+        <span class="rule-card-title">Ablauf des Spieltags</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>1. Motorik</strong> (ca. 30 Min.): 3 Übungen — Koordinationsslalom, Zielwurfstaffel, Einbeinsprung</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>2. Einzel</strong> (ca. 80 Min.): 4 Einzel werden gespielt</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Pause</strong> zwischen Einzel und Doppel: max. 30 Minuten</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>3. Doppel</strong> (ca. 40 Min.): 2 Doppel werden gespielt</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Einschlagzeit vor dem Match: max. <strong>5 Minuten</strong></div></div>
+      </div>
+    </div>
+
+    <!-- Wertung -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🏆</span>
+        <span class="rule-card-title">Mannschaftswertung</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Tennis: <strong>2 Punkte</strong> pro gewonnenem Match (max. 12 Punkte aus 4 Einzel + 2 Doppel)</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Motorik: <strong>2 Punkte</strong> pro gewonnener Übung, <strong>1 Punkt</strong> bei Unentschieden (max. 6 Punkte)</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Gesamtpunkte: max. <strong>18 Punkte</strong> pro Spieltag</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Es gibt <strong>keinen Auf- oder Abstieg</strong> in dieser Liga.</div></div>
+      </div>
+    </div>
+
+    <!-- Material -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🎒</span>
+        <span class="rule-card-title">Ball & Schläger</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Ball: <strong>Dunlop rot (Stage 3)</strong> — druckreduziert, 75% langsamer als normaler Ball</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Schläger: empfohlene Länge <strong>43–58 cm</strong> (17–23 Inch)</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Spielfeldbreite: <strong>6 Meter</strong> (Kleinfeld mit zwei Kleinfeldnetzen)</div></div>
+      </div>
+    </div>
+
+    <!-- Doppel Sonderregel -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">👥</span>
+        <span class="rule-card-title">Doppel · Sonderregeln U9</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Aufschlag-Sonderregel U9:</strong> Beim Aufschlag stehen <strong>beide Spieler der Aufschlagseite hinter der Grundlinie</strong> — kein Partner am Netz beim Einschlagen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Die beiden Spieler des <strong>returnierenden Teams</strong> stehen ebenfalls nebeneinander hinter der Grundlinie.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Nach dem Aufschlag darf (und soll) auch <strong>ans Netz gegangen</strong> werden.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Aufschlag-Rotation:</strong> Alle 4 Spieler in fester Reihenfolge: z.B. Heim 1 → Gast 1 → Heim 2 → Gast 2 → Heim 1 ...</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschläger wechselt die Seite (Deuce/Ad) nach jedem Punkt. Sein Partner wechselt mit.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Die <strong>Returnspieler</strong> behalten ihre feste Seite für den gesamten Satz.</div></div>
+        <div class="rule-highlight"><strong>Merkhilfe für Eltern</strong>Bei U9 gilt: Beim Aufschlag alle 4 Kinder hinten an der Grundlinie. Erst wenn der Ball im Spiel ist, dürfen sie ans Netz.</div>
+      </div>
+    </div>
+
+    <!-- Aufstellung der Teams -->
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">📋</span>
+        <span class="rule-card-title">Aufstellung der Teams</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Einzel — Sortierung:</strong> Die Spieler für die Einzelspiele werden entsprechend ihrer gemeldeten Position aufsteigend sortiert. Der Spieler mit der niedrigsten Position in der Meldeliste spielt auf <strong>Position 1</strong>, der Spieler mit der höchsten Position auf <strong>Position 4</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Einzel — Reihenfolge:</strong> Bei den Einzel-Paarungen spielen <strong>zuerst die Positionen 2 und 4</strong>, anschließend <strong>1 und 3</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Doppel — Sortierung:</strong> Die Spieler für die Doppelspiele werden analog ihrer gemeldeten Positionen aufsteigend sortiert und ihnen entsprechend die <strong>Positionen 1 bis 4</strong> zugewiesen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Doppel — Paarungen:</strong> Die Spieler des Doppels mit der <strong>niedrigeren Summe</strong> ihrer beiden Positionen spielen das <strong>Doppel 1</strong>. Die Spieler mit der höheren Summe spielen das <strong>Doppel 2</strong>.</div></div>
+        <div class="rule-highlight"><strong>Sonderfall</strong>Ist die Summe der Positionen beider Doppel <strong>5</strong> (also 1+4 und 2+3), ist es egal, welche Paarung Doppel 1 oder Doppel 2 spielt.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rules-footer">Quelle: BTV Ausschreibung U9 Kleinfeld Sommer 2026 · Stand 24.04.2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+</div>
+
+<!-- ══ HOW-TO ══ -->
+<div id="howto" class="screen">
+  <div class="rules-header">
+    <button class="btn-rules-back" onclick="returnFromRules()">← Zurück</button>
+    <h2>📱 Bedienungsanleitung</h2>
+  </div>
+
+  <div class="rules-content">
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🚀</span>
+        <span class="rule-card-title">Spiel starten</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Oben <strong>Einzel</strong> oder <strong>Doppel</strong> auswählen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Die <strong>Namen der Spieler</strong> (oder Teams) eingeben — oder leer lassen für „Heim" / „Gast".</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Festlegen, wer <strong>zuerst aufschlägt</strong> (nach dem Ausknobeln).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>⇄ Startseiten tauschen</strong> die Feldhälften anpassen, falls Heim nicht oben startet.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Auf <strong>▶ Einzel / Doppel starten</strong> tippen — das Spiel beginnt.</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">👆</span>
+        <span class="rule-card-title">Punkte zählen</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Obere Hälfte</strong> = Heim, <strong>untere Hälfte</strong> = Gast.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Einfach auf die <strong>Feldhälfte des Punktgewinners tippen</strong> — die App zählt automatisch.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der <strong>gelbe Punkt</strong> (🟡) zeigt, wer gerade aufschlägt.</div></div>
+        <div class="rule-highlight"><strong>Tipp</strong>Immer die Seite des Kindes antippen, das den Punkt gewonnen hat — egal wer aufgeschlagen hat.</div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">↩</span>
+        <span class="rule-card-title">Fehler korrigieren</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>↩ Rückgängig</strong> (unten links) macht den letzten Punkt rückgängig.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mehrfach tippen um mehrere Schritte zurückzugehen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>🎾 Aufschlag wechseln</strong> kann der Aufschlag manuell korrigiert werden.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>⇄ Seiten wechseln</strong> kann die Seitenanzeige manuell korrigiert werden.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Nur Doppel: Mit <strong>🔄 Spieler wechseln</strong> kann innerhalb eines Teams die Aufschlagreihenfolge korrigiert werden.</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">⇄</span>
+        <span class="rule-card-title">Automatische Hinweise</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>Seitenwechsel</strong> erscheint automatisch ein grünes Banner und ein Hinweisfenster.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>40:40 (No-Ad)</strong> erscheint ein Fenster — der Rückschläger wählt <strong>◀ Links</strong> oder <strong>Rechts ▶</strong> als Einschlagseite. Danach den nächsten Punkt durch Tippen auf den Punktgewinner vergeben.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Beim <strong>Tiebreak</strong> wählt der Rückschläger ebenfalls seine Einschlagseite per Fenster — die Spielhälften bleiben unverändert.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Beim aufschlagenden Spieler wird das <strong>Deuce/Ad-Label</strong> angezeigt — daran erkennt man, von welcher Seite gerade aufgeschlagen wird.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Das <strong>Banner oben</strong> zeigt immer den aktuellen Spielabschnitt (Satz, Tiebreak, Match-Tiebreak).</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">☰</span>
+        <span class="rule-card-title">Menü während des Spiels</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Oben rechts auf <strong>Menü</strong> tippen, um Optionen zu öffnen.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Weiterspielen</strong> schließt das Menü und kehrt zum Spiel zurück.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>📋 Regelguide</strong> und <strong>📱 Bedienung</strong> können auch während eines laufenden Spiels aufgerufen werden — das Spiel wird nicht beendet, der Spielstand bleibt erhalten. „← Zurück" führt zurück zum Spiel.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>← Namen ändern</strong> springt zum Setup-Bildschirm.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div><strong>Neues Spiel</strong> startet ein komplett neues Match (Bestätigung erforderlich).</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">📊</span>
+        <span class="rule-card-title">Spielstand ablesen</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Die <strong>Tabelle oben</strong> (Scoreboard) zeigt: Satz 1, Satz 2, Match-Tiebreak und den aktuellen Spielstand.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Die <strong>große Zahl</strong> im Feld zeigt den aktuellen Punktstand (0, 15, 30, 40 oder TB-Punkte).</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Gewonnene Sätze werden im Scoreboard <strong>grün</strong> hervorgehoben.</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">🏆</span>
+        <span class="rule-card-title">Spielende & Ergebnis</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>Nach dem letzten Punkt erscheint automatisch der <strong>Siegerbildschirm</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>📄 Ergebnis als PDF</strong> kann das Ergebnis gedruckt oder geteilt werden.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Mit <strong>Neues Spiel starten</strong> geht es zurück zum Startbildschirm.</div></div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-card-header">
+        <span class="rule-card-icon">📱</span>
+        <span class="rule-card-title">iOS-Tipps</span>
+      </div>
+      <div class="rule-card-body">
+        <div class="rule-item"><div class="rule-dot"></div><div>App zum <strong>Home-Bildschirm hinzufügen</strong>: Safari → Teilen-Symbol → „Zum Home-Bildschirm".</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Dann startet die App wie eine native App — ohne Browser-Leiste und im Vollbild.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Bildschirm-Timeout: am besten <strong>Auto-Lock deaktivieren</strong> (Einstellungen → Bildschirm & Helligkeit), damit der Bildschirm während des Spiels nicht ausgeht.</div></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="rules-footer">BTV U9 Kleinfeld Score · iOS 1.4 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+</div>
+
+<!-- ══ WINNER ══ -->
+<div id="winner" class="screen">
+  <div class="trophy">🏆</div>
+  <h2>Sieger</h2>
+  <div class="winner-name" id="winner-name">–</div>
+
+  <div class="final-score-display">
+    <div class="score-line" id="ws-score-line">–</div>
+    <div class="score-detail" id="ws-score-detail">–</div>
+  </div>
+
+  <div class="winner-btns">
+    <button class="btn-pdf" onclick="exportPDF()">📄 Ergebnis als PDF</button>
+    <button class="btn-new-match" onclick="newMatch()">Neues Spiel starten</button>
+  </div>
+</div>
+
+<!-- PDF hidden area -->
+<div id="pdf-area"></div>
+
+<!-- Modal: Tiebreak Seitenwahl -->
+<div class="modal-overlay" id="modal-tbside">
+  <div class="modal">
+    <div style="font-size:36px;margin-bottom:6px">🎾</div>
+    <h2 id="tbside-modal-title">Satz-Tiebreak!</h2>
+    <p style="margin:0 0 4px">Rückschläger wählt die Einschlagseite:</p>
+    <p style="font-size:18px;font-weight:700;margin:0 0 14px" id="tbside-receiver"></p>
+    <div class="btn-row" style="flex-direction:column;gap:8px">
+      <button class="btn-primary" id="tbside-btn-left" onclick="chooseTBSide('left')">◀ Links</button>
+      <button class="btn-primary btn-blue" id="tbside-btn-right" onclick="chooseTBSide('right')">Rechts ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: No-Ad -->
+<div class="modal-overlay" id="modal-noad">
+  <div class="modal">
+    <h2>40 : 40</h2>
+    <p style="margin:0 0 4px">Rückschläger wählt die Einschlagseite:</p>
+    <p style="font-size:18px;font-weight:700;margin:0 0 14px" id="noad-receiver"></p>
+    <div class="btn-row" style="flex-direction:column;gap:8px">
+      <button class="btn-primary" id="noad-side-left" onclick="chooseNoAdSide('left')">◀ Links</button>
+      <button class="btn-primary btn-blue" id="noad-side-right" onclick="chooseNoAdSide('right')">Rechts ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Seitenwechsel -->
+<div class="modal-overlay" id="modal-side">
+  <div class="modal">
+    <div style="font-size:40px;margin-bottom:8px">⇄</div>
+    <h2>Seitenwechsel!</h2>
+    <p id="side-modal-text">Die Spieler wechseln jetzt die Seite.</p>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="closeSideModal()">Verstanden ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Set -->
+<div class="modal-overlay" id="modal-set">
+  <div class="modal">
+    <h2 id="ms-title">Satz!</h2>
+    <p id="ms-text"></p>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="closeSetModal()">Weiter ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Menu -->
+<div class="modal-overlay" id="modal-menu">
+  <div class="modal">
+    <h2>Menü</h2>
+    <p id="menu-score-text" style="margin-bottom:14px">–</p>
+    <div class="btn-row" style="flex-direction:column;gap:8px">
+      <button class="btn-primary" onclick="closeMenu()">Weiterspielen</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="openFromMenu('rules')">📋 Regelguide</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="openFromMenu('howto')">📱 Bedienung</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px" onclick="goToSetupFromMenu()">← Namen ändern</button>
+      <button class="btn-secondary" style="padding:12px;font-size:14px;color:#c00" onclick="confirmNewMatch()">Neues Spiel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  SETUP STATE
+// ══════════════════════════════════════════════
+let firstServeSetup = 'home';
+
+function setFirstServe(side) {
+  firstServeSetup = side;
+  document.getElementById('serve-p1').classList.toggle('active', side === 'home');
+  document.getElementById('serve-p2').classList.toggle('active', side === 'guest');
+}
+
+// ══════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════
+const POINTS = ['0','15','30','40'];
+let state = {}, history = [];
+let matchResult = null; // store final result for PDF
+
+function freshState(nameHome, nameGuest) {
+  return {
+    names: { home: nameHome || 'Heim', guest: nameGuest || 'Gast' },
+    sets: { home: 0, guest: 0 },
+    setScores: [],
+    currentSet: 1,
+    games: { home: 0, guest: 0 },
+    gamesInSet: 0,
+    setFirstServer: firstServeSetup,
+    serving: firstServeSetup,
+    points: { home: 0, guest: 0 },
+    phase: 'set',
+    tbPoints: { home: 0, guest: 0 },
+    tbTotal: 0,
+    sidesSwapped: false,
+    visualSwapped: false,  // display: home shown on swapped side
+    pointInGame: 0,  // 0=Deuce, 1=Ad — wechselt nach jedem Punkt
+    finished: false,
+  };
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function goToSetup() {
+  if (state.finished) { showScreen('setup'); return; }
+  if (confirm('Zum Setup zurück? Der aktuelle Spielstand bleibt gespeichert.')) {
+    showScreen('setup');
+  }
+}
+
+function goToSetupFromMenu() {
+  closeMenu();
+  goToSetup();
+}
+
+// Setup side swap (before match)
+let setupSidesSwapped = false;
+function swapSetupSides() {
+  setupSidesSwapped = !setupSidesSwapped;
+  const btn = document.querySelector('.btn-setup-swap');
+  btn.textContent = setupSidesSwapped
+    ? '⇄ Heim unten / Gast oben (tippen zum Zurücksetzen)'
+    : '⇄ Startseiten tauschen (nach Ausknobeln)';
+  btn.style.background = setupSidesSwapped ? 'var(--yellow-bg)' : '';
+  btn.style.borderColor = setupSidesSwapped ? '#f0d070' : '';
+  btn.style.color = setupSidesSwapped ? '#9a7000' : '';
+}
+
+// Manual side swap during match (for correction)
+function manualSwapSides() {
+  history.push(JSON.parse(JSON.stringify(state)));
+  if (currentMode === 'doppel') {
+    dblSwapSides();
+    renderDoppel();
+  } else {
+    swapSides();
+    renderAll();
+  }
+}
+
+function updateServeButtonLabels(mode) {
+  if (mode === 'einzel') {
+    const h = document.getElementById('name-home').value.trim() || 'Spieler 1';
+    const g = document.getElementById('name-guest').value.trim() || 'Spieler 2';
+    document.getElementById('serve-p1').textContent = `🎾 ${h}`;
+    document.getElementById('serve-p2').textContent = `🎾 ${g}`;
+  } else if (mode === 'doppel') {
+    const h1 = document.getElementById('dbl-h1').value.trim() || 'Spieler 1';
+    const h2 = document.getElementById('dbl-h2').value.trim() || 'Spieler 2';
+    document.getElementById('dbl-first-h1').textContent = h1;
+    document.getElementById('dbl-first-h2').textContent = h2;
+    const g1 = document.getElementById('dbl-g1').value.trim() || 'Spieler 1';
+    const g2 = document.getElementById('dbl-g2').value.trim() || 'Spieler 2';
+    document.getElementById('dbl-first-g1').textContent = g1;
+    document.getElementById('dbl-first-g2').textContent = g2;
+  }
+}
+
+function startMatch() {
+  const h = document.getElementById('name-home').value.trim() || 'Spieler 1';
+  const g = document.getElementById('name-guest').value.trim() || 'Spieler 2';
+  state = freshState(h, g);
+  if (setupSidesSwapped) { state.sidesSwapped = true; state.visualSwapped = true; }
+  history = [];
+  matchResult = null;
+  currentMode = 'einzel';
+  showCourt('einzel');
+  showScreen('score');
+  renderAll();
+}
+
+function newMatch() {
+  document.getElementById('court-area').style.display = '';
+  document.getElementById('court-doppel').style.display = 'none';
+  currentMode = 'einzel';
+  setMode('einzel');
+  showScreen('setup');
+}
+function confirmNewMatch() { closeMenu(); if (confirm('Neues Spiel starten?')) newMatch(); }
+
+// ══════════════════════════════════════════════
+//  SIDE CHANGE
+// ══════════════════════════════════════════════
+function checkSideChange() {
+  const g = state.gamesInSet;
+  return g === 1 || g === 3 || g === 5 || g === 7;
+}
+
+function swapSides() {
+  state.sidesSwapped = !state.sidesSwapped;
+  state.visualSwapped = !state.visualSwapped;
+}
+
+// ══════════════════════════════════════════════
+//  SCORING
+// ══════════════════════════════════════════════
+function scorePoint(player) {
+  if (currentMode === 'doppel') { dblScorePoint(player); return; }
+  if (state.finished) return;
+  history.push(JSON.parse(JSON.stringify(state)));
+  if (state.phase === 'tiebreak' || state.phase === 'matchtb') scoreTBPoint(player);
+  else scoreNormalPoint(player);
+}
+
+function scoreNormalPoint(player) {
+  // No-Ad: Bei 40:40 entscheidet der nächste Tap das Game direkt
+  if (state.points.home === 3 && state.points.guest === 3) {
+    winGame(player);
+    return;
+  }
+  state.points[player]++;
+  if (state.points.home === 3 && state.points.guest === 3) {
+    const recv = state.serving === 'home' ? 'guest' : 'home';
+    document.getElementById('noad-receiver').textContent = state.names[recv];
+    document.getElementById('noad-side-left').textContent = '◀ Links · ' + state.names[recv];
+    document.getElementById('noad-side-right').textContent = state.names[recv] + ' · Rechts ▶';
+    document.getElementById('modal-noad').classList.add('active');
+    renderAll(); return;
+  }
+  state.pointInGame++;
+  if (state.points[player] > 3) winGame(player);
+  else renderAll();
+}
+
+function scoreNoAd(winner) {
+  document.getElementById('modal-noad').classList.remove('active');
+  if (currentMode === 'doppel') dblWinGame(winner);
+  else winGame(winner);
+}
+
+function chooseNoAdSide(side) {
+  document.getElementById('modal-noad').classList.remove('active');
+  // Bei 40:40 findet KEIN Spielhälften-Wechsel statt — nur die Aufschlag-/
+  // Empfangsseite innerhalb der jeweiligen Hälfte ändert sich (Deuce/Ad).
+  if (currentMode === 'doppel') {
+    dblState.pointInGame = (side === 'left') ? 0 : 1;
+    renderDoppel();
+  } else {
+    state.pointInGame = (side === 'left') ? 0 : 1;
+    renderAll();
+  }
+}
+
+function winGame(player) {
+  state.points = { home: 0, guest: 0 };
+  state.pointInGame = 0;
+  state.games[player]++;
+  state.gamesInSet++;
+  switchServe(); // wechselt nach jedem Spiel
+
+  const h = state.games.home, g = state.games.guest;
+
+  // 4:4 → Satz-Tiebreak (Rückschläger wählt Seite vorher)
+  if (h === 4 && g === 4) {
+    const sc = checkSideChange();
+    const startTB = () => showTiebreakSideChoice();
+    if (sc) { swapSides(); triggerSideModal(startTB); }
+    else startTB();
+    return;
+  }
+
+  // Satz gewonnen: mind. 4 Spiele UND mind. 2 Spiele Vorsprung
+  // Erlaubte Satzstände: 4:0, 4:1, 4:2, 5:3 — NICHT 4:3 (zu wenig Vorsprung)
+  // 4:4 wird oben abgefangen → hier nie erreicht
+  const ahead = Math.max(h, g), behind = Math.min(h, g);
+  const diff = ahead - behind;
+  if (ahead >= 4 && diff >= 2) {
+    const sc = checkSideChange();
+    if (sc) { swapSides(); triggerSideModal(() => winSet(player)); }
+    else winSet(player);
+    return;
+  }
+
+  // Mid-set side change only
+  if (checkSideChange()) { swapSides(); triggerSideModal(() => renderAll()); }
+  else renderAll();
+}
+
+function scoreTBPoint(player) {
+  const isMatch = state.phase === 'matchtb';
+  const target = isMatch ? 10 : 7;
+
+  state.tbPoints[player]++;
+  state.tbTotal++;
+
+  // TB serve: after pt 1, then every 2
+  if (state.tbTotal === 1 || (state.tbTotal > 1 && (state.tbTotal - 1) % 2 === 0)) switchServe();
+
+  // TB side change every 6 points (6, 12, 18, ...)
+  if (state.tbTotal > 0 && state.tbTotal % 6 === 0) {
+    swapSides();
+    const h = state.tbPoints.home, g = state.tbPoints.guest;
+    if (!(Math.max(h,g) >= target && Math.abs(h-g) >= 2)) {
+      triggerSideModal(() => renderAll()); return;
+    }
+  }
+
+  const h = state.tbPoints.home, g = state.tbPoints.guest;
+  if (Math.max(h,g) >= target && Math.abs(h-g) >= 2) {
+    const winner = h > g ? 'home' : 'guest';
+    // Satz-Tiebreak entscheidet den Satz (winSet kümmert sich um Match-Tiebreak falls 1:1)
+    if (isMatch) winMatch(winner); else winSet(winner, true);
+    return;
+  }
+  renderAll();
+}
+
+function showMatchTBSideChoice() {
+  const receiver = state.serving === 'home' ? 'guest' : 'home';
+  document.getElementById('tbside-receiver').textContent = state.names[receiver];
+  document.getElementById('tbside-btn-left').textContent = '◀ Links · ' + state.names[receiver];
+  document.getElementById('tbside-btn-right').textContent = state.names[receiver] + ' · Rechts ▶';
+  document.getElementById('tbside-modal-title').textContent = 'Match-Tiebreak!';
+  document.getElementById('modal-tbside').classList.add('active');
+}
+
+function showTiebreakSideChoice() {
+  // Receiver chooses side before tiebreak
+  const receiver = state.serving === 'home' ? 'guest' : 'home';
+  document.getElementById('tbside-receiver').textContent = state.names[receiver];
+  document.getElementById('tbside-btn-left').textContent = '◀ Links · ' + state.names[receiver];
+  document.getElementById('tbside-btn-right').textContent = state.names[receiver] + ' · Rechts ▶';
+  document.getElementById('modal-tbside').classList.add('active');
+}
+
+function chooseTBSide(side) {
+  document.getElementById('modal-tbside').classList.remove('active');
+  // Bei Tiebreak findet KEIN Spielhälften-Wechsel statt — nur die Aufschlag-/
+  // Empfangsseite innerhalb der jeweiligen Hälfte ändert sich.
+  // Ein evtl. fälliger Hälftenwechsel ist bereits davor in winGame() passiert.
+  if (currentMode === 'doppel') {
+    dblState.pointInGame = (side === 'left') ? 0 : 1;
+    dblState.phase = 'tiebreak';
+    dblState.tbPoints = { home: 0, guest: 0 };
+    dblState.tbTotal = 0;
+    renderDoppel();
+  } else {
+    state.pointInGame = (side === 'left') ? 0 : 1;
+    state.phase = 'tiebreak';
+    state.tbPoints = { home: 0, guest: 0 };
+    state.tbTotal = 0;
+    renderAll();
+  }
+}
+
+function winSet(player, fromTB = false) {
+  const sc = { home: state.games.home, guest: state.games.guest };
+  if (fromTB) sc.tb = { home: state.tbPoints.home, guest: state.tbPoints.guest };
+  state.setScores.push(sc);
+  state.sets[player]++;
+  const setNum = state.currentSet;
+  const line = `${sc.home}:${sc.guest}${fromTB ? ` (TB ${sc.tb.home}:${sc.tb.guest})` : ''}`;
+
+  state.games = { home: 0, guest: 0 };
+  state.points = { home: 0, guest: 0 };
+  state.tbPoints = { home: 0, guest: 0 };
+  state.tbTotal = 0;
+  state.gamesInSet = 0;
+  state.phase = 'set';
+  state.currentSet++;
+  swapSides(); // after every set
+  state.setFirstServer = state.setFirstServer === 'home' ? 'guest' : 'home';
+  state.serving = state.setFirstServer;
+
+  if (state.sets.home === 1 && state.sets.guest === 1) {
+    state.phase = 'matchtb';
+    state.tbPoints = { home: 0, guest: 0 };
+    state.tbTotal = 0;
+    showSetModal(`Satz ${setNum}: ${state.names[player]}!`, `${line}\n\n⇄ Seitenwechsel!\n→ Match-Tiebreak bis 10`, () => renderAll());
+    return;
+  }
+  if (state.sets[player] === 2) {
+    showSetModal(`Satz ${setNum}: ${state.names[player]}!`, `${line}\n\n⇄ Seitenwechsel!`, () => winMatch(player));
+    return;
+  }
+  showSetModal(`Satz ${setNum}: ${state.names[player]}!`, `${line}\n\n⇄ Seitenwechsel!`, () => renderAll());
+}
+
+function winMatch(player) {
+  state.finished = true;
+  const loser = player === 'home' ? 'guest' : 'home';
+  const parts = state.setScores.map(s => `${s.home}:${s.guest}${s.tb ? ` (TB ${s.tb.home}:${s.tb.guest})` : ''}`);
+  if (state.phase === 'matchtb') parts.push(`MT ${state.tbPoints.home}:${state.tbPoints.guest}`);
+
+  matchResult = {
+    winner: state.names[player],
+    loser: state.names[loser],
+    winnerSide: player === 'home' ? 'Heim' : 'Gast',
+    loserSide:  player === 'home' ? 'Gast' : 'Heim',
+    sets: { winner: state.sets[player], loser: state.sets[loser] },
+    setScores: state.setScores,
+    mtPoints: state.phase === 'matchtb' ? { home: state.tbPoints.home, guest: state.tbPoints.guest } : null,
+    scoreParts: parts,
+    date: new Date().toLocaleDateString('de-DE', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
+    time: new Date().toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }),
+    names: state.names,
+  };
+
+  // Winner screen
+  document.getElementById('winner-name').textContent = state.names[player];
+  document.getElementById('ws-score-line').textContent = parts.join('   ');
+
+  // Detail lines
+  let detail = `${state.names.home} (Heim) vs. ${state.names.guest} (Gast)`;
+  detail += `\nSätze: ${state.sets.home}:${state.sets.guest}`;
+  document.getElementById('ws-score-detail').textContent = detail;
+
+  showScreen('winner');
+}
+
+function switchServe() { state.serving = state.serving === 'home' ? 'guest' : 'home'; }
+function manualToggleServe() {
+  history.push(JSON.parse(JSON.stringify(state)));
+  if (currentMode === 'doppel') {
+    const currentTeam = dblState.rotation[dblState.rotationIdx][0];
+    do {
+      dblState.rotationIdx = (dblState.rotationIdx + 1) % 4;
+    } while (dblState.rotation[dblState.rotationIdx][0] === currentTeam);
+    dblState.servingTeam = dblState.rotation[dblState.rotationIdx][0];
+    renderDoppel();
+  } else {
+    switchServe();
+    renderAll();
+  }
+}
+function manualTogglePlayer() {
+  history.push(JSON.parse(JSON.stringify(state)));
+  const idx = dblState.rotationIdx;
+  const partnerIdx = (idx + 2) % 4;
+  const tmp = dblState.rotation[idx][1];
+  dblState.rotation[idx][1] = dblState.rotation[partnerIdx][1];
+  dblState.rotation[partnerIdx][1] = tmp;
+  dblState.servingTeam = dblState.rotation[idx][0];
+  renderDoppel();
+}
+function undoPoint() {
+  if (!history.length) return;
+  if (currentMode === 'doppel') {
+    dblState = history.pop();
+    state = dblState;
+  } else {
+    state = history.pop();
+  }
+  document.getElementById('modal-noad').classList.remove('active');
+  document.getElementById('modal-side').classList.remove('active');
+  if (currentMode === 'doppel') renderDoppel(); else renderAll();
+}
+
+// ══════════════════════════════════════════════
+//  PDF EXPORT
+// ══════════════════════════════════════════════
+function exportPDF() {
+  if (!matchResult) return;
+  const r = matchResult;
+
+  // Build set score table rows
+  let setRows = '';
+  r.setScores.forEach((s, i) => {
+    const tbNote = s.tb ? ` <small>(Tiebreak ${s.tb.home}:${s.tb.guest})</small>` : '';
+    setRows += `<tr>
+      <td>Satz ${i+1}</td>
+      <td style="text-align:center;font-weight:600">${s.home}</td>
+      <td style="text-align:center;font-weight:600">${s.guest}</td>
+      <td>${tbNote ? 'Tiebreak ' + s.tb.home + ':' + s.tb.guest : '–'}</td>
+    </tr>`;
+  });
+  if (r.mtPoints) {
+    setRows += `<tr>
+      <td>Match-Tiebreak</td>
+      <td style="text-align:center;font-weight:600">${r.mtPoints.home}</td>
+      <td style="text-align:center;font-weight:600">${r.mtPoints.guest}</td>
+      <td>Bis 10 Punkte</td>
+    </tr>`;
+  }
+
+  const html = `
+    <h1>🎾 BTV U9 Kleinfeld · Spielergebnis</h1>
+    <div class="pdf-sub">BTV Südbayern 2026 · ${r.date} · ${r.time} Uhr</div>
+
+    <table>
+      <tr>
+        <th>Spieler</th>
+        <th style="text-align:center">Heim/Gast</th>
+        <th style="text-align:center">Sätze</th>
+        <th>Ergebnis</th>
+      </tr>
+      <tr class="${r.winnerSide === 'Heim' ? 'winner-row' : ''}">
+        <td><strong>${r.names.home}</strong>${r.winnerSide === 'Heim' ? ' 🏆' : ''}</td>
+        <td style="text-align:center">Heim</td>
+        <td style="text-align:center;font-size:20px;font-weight:700">${r.sets.home}</td>
+        <td>${r.winnerSide === 'Heim' ? '<strong>Sieger</strong>' : ''}</td>
+      </tr>
+      <tr class="${r.winnerSide === 'Gast' ? 'winner-row' : ''}">
+        <td><strong>${r.names.guest}</strong>${r.winnerSide === 'Gast' ? ' 🏆' : ''}</td>
+        <td style="text-align:center">Gast</td>
+        <td style="text-align:center;font-size:20px;font-weight:700">${r.sets.guest}</td>
+        <td>${r.winnerSide === 'Gast' ? '<strong>Sieger</strong>' : ''}</td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th>Abschnitt</th>
+        <th style="text-align:center">${r.names.home} (Heim)</th>
+        <th style="text-align:center">${r.names.guest} (Gast)</th>
+        <th>Bemerkung</th>
+      </tr>
+      ${setRows}
+    </table>
+
+    <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
+    <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
+    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (iOS 1.4) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  `;
+
+  document.getElementById('pdf-area').innerHTML = html;
+
+  const slug = s => s.replace(/\s+/g, '-');
+  const filename = r.modus === 'Doppel'
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.4`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.4`;
+  const originalTitle = document.title;
+  document.title = filename;
+  setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
+}
+
+// ══════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════
+function renderAll() {
+  const { names, serving, phase, games, points, tbPoints, sets, setScores, currentSet, sidesSwapped, gamesInSet } = state;
+
+  document.getElementById('zone-name-home').textContent = names.home;
+  document.getElementById('zone-name-guest').textContent = names.guest;
+  document.getElementById('sb-name-home').textContent = names.home;
+  document.getElementById('sb-name-guest').textContent = names.guest;
+
+  // Visual side swap: swap zones in grid
+  document.querySelector('.court-area').classList.toggle('swapped', !!state.visualSwapped);
+
+  const homeLeft = !sidesSwapped;
+  document.getElementById('side-home').textContent = homeLeft ? '◀ Links' : 'Rechts ▶';
+  document.getElementById('side-guest').textContent = homeLeft ? '▶ Rechts' : '◀ Links';
+
+  const servingSide = (state.pointInGame || 0) % 2 === 0 ? 'Deuce' : 'Ad';
+  document.getElementById('serving-side-home').textContent = serving === 'home' ? servingSide : '';
+  document.getElementById('serving-side-guest').textContent = serving === 'guest' ? servingSide : '';
+
+  document.getElementById('zone-home').classList.toggle('serving', serving === 'home');
+  document.getElementById('zone-guest').classList.toggle('serving', serving === 'guest');
+
+  if (phase === 'tiebreak' || phase === 'matchtb') {
+    document.getElementById('point-home').textContent = tbPoints.home;
+    document.getElementById('point-guest').textContent = tbPoints.guest;
+    document.getElementById('sb-game-home').textContent = tbPoints.home;
+    document.getElementById('sb-game-guest').textContent = tbPoints.guest;
+  } else {
+    document.getElementById('point-home').textContent = POINTS[points.home] || '0';
+    document.getElementById('point-guest').textContent = POINTS[points.guest] || '0';
+    document.getElementById('sb-game-home').textContent = games.home;
+    document.getElementById('sb-game-guest').textContent = games.guest;
+  }
+
+  const cols = ['s1','s2','s3'];
+  for (let i = 0; i < 3; i++) {
+    const sc = setScores[i];
+    const hEl = document.getElementById(`sb-${cols[i]}-home`);
+    const gEl = document.getElementById(`sb-${cols[i]}-guest`);
+    if (sc !== undefined) {
+      const tbH = sc.tb ? `(${sc.tb.home})` : '';
+      const tbG = sc.tb ? `(${sc.tb.guest})` : '';
+      hEl.innerHTML = sc.home + (tbH ? `<span class="tb-small">${tbH}</span>` : '');
+      gEl.innerHTML = sc.guest + (tbG ? `<span class="tb-small">${tbG}</span>` : '');
+      const w = sc.home > sc.guest ? 'home' : (sc.guest > sc.home ? 'guest' : (sc.tb && sc.tb.home > sc.tb.guest ? 'home' : 'guest'));
+      hEl.className = 'set-score' + (w==='home' ? ' won' : '');
+      gEl.className = 'set-score' + (w==='guest' ? ' won' : '');
+    } else if (i === currentSet - 1) {
+      if (phase === 'matchtb') {
+        hEl.textContent = 'MT'; gEl.textContent = 'MT';
+      } else if (phase === 'tiebreak') {
+        hEl.textContent = games.home; gEl.textContent = games.guest;
+      } else {
+        hEl.textContent = '–'; gEl.textContent = '–';
+      }
+      hEl.className = 'set-score current'; gEl.className = 'set-score current';
+    } else {
+      hEl.textContent = '–'; gEl.textContent = '–';
+      hEl.className = 'set-score';
+    }
+  }
+
+  const phLabel = phase==='matchtb' ? 'Match-Tiebreak' : phase==='tiebreak' ? 'Tiebreak' : `Satz ${Math.min(currentSet,2)}`;
+  document.getElementById('phase-label').textContent = phLabel;
+
+  const banner = document.getElementById('phase-banner');
+  if (phase==='matchtb') { banner.textContent='Match-Tiebreak · Bis 10 · 2 Pkte Abstand · Seitenwechsel bei 6'; banner.className='phase-banner matchtb'; }
+  else if (phase==='tiebreak') { banner.textContent='Satz-Tiebreak · Bis 7 · 2 Punkte Abstand'; banner.className='phase-banner tiebreak'; }
+  else { banner.textContent=`Kurzsatz ${Math.min(currentSet,2)} · Min. 4 Spiele · 2 Vorsprung · No-Ad`; banner.className='phase-banner normal'; }
+
+  const showSideBanner = (phase==='set'||phase==='tiebreak') && (gamesInSet===1||gamesInSet===3||gamesInSet===5||gamesInSet===7);
+  document.getElementById('side-banner').classList.toggle('visible', showSideBanner);
+
+  const tapHome = document.querySelector('#zone-home .tap-hint');
+  const tapGuest = document.querySelector('#zone-guest .tap-hint');
+  if (tapHome) tapHome.textContent = '▲ Tippen für Punkt';
+  if (tapGuest) tapGuest.textContent = '▼ Tippen für Punkt';
+
+  document.getElementById('menu-score-text').textContent =
+    `${names.home} (Heim) ${sets.home}:${sets.guest} ${names.guest} (Gast)\nSpiele: ${games.home}:${games.guest}\nAufschlag: ${names[serving]}\n${names.home}: ${homeLeft?'Links':'Rechts'} · ${names.guest}: ${homeLeft?'Rechts':'Links'}`;
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+let sideModalCb = null, setModalCb = null;
+
+function triggerSideModal(cb) {
+  sideModalCb = cb;
+  let reason;
+  if (currentMode === 'doppel') {
+    const isDblTB = dblState.phase === 'tiebreak' || dblState.phase === 'matchtb';
+    if (isDblTB) {
+      const tbType = dblState.phase === 'matchtb' ? 'Match-Tiebreak' : 'Satz-Tiebreak';
+      reason = `${tbType}: ${dblState.tbPoints.home}:${dblState.tbPoints.guest} (${dblState.tbTotal} Punkte gespielt)`;
+    } else {
+      reason = `Spielstand: ${dblState.games.home}:${dblState.games.guest} (${dblState.gamesInSet} Spiele)`;
+    }
+  } else {
+    const isTB = state.phase === 'tiebreak' || state.phase === 'matchtb';
+    if (isTB) {
+      const tbType = state.phase === 'matchtb' ? 'Match-Tiebreak' : 'Satz-Tiebreak';
+      reason = `${tbType}: ${state.tbPoints.home}:${state.tbPoints.guest} (${state.tbTotal} Punkte gespielt)`;
+    } else {
+      reason = `Spielstand: ${state.games.home}:${state.games.guest} (${state.gamesInSet} Spiele)`;
+    }
+  }
+  document.getElementById('side-modal-text').textContent = `${reason}\n\nDie Spieler wechseln jetzt die Seite!`;
+  if (currentMode === 'doppel') renderDoppel(); else renderAll();
+  document.getElementById('modal-side').classList.add('active');
+}
+
+function closeSideModal() {
+  document.getElementById('modal-side').classList.remove('active');
+  if (sideModalCb) { sideModalCb(); sideModalCb = null; }
+}
+
+function showSetModal(title, text, cb) {
+  document.getElementById('ms-title').textContent = title;
+  document.getElementById('ms-text').textContent = text;
+  setModalCb = cb;
+  document.getElementById('modal-set').classList.add('active');
+}
+
+function closeSetModal() {
+  document.getElementById('modal-set').classList.remove('active');
+  if (setModalCb) { setModalCb(); setModalCb = null; }
+}
+
+function showMenu() { renderAll(); document.getElementById('modal-menu').classList.add('active'); }
+function closeMenu() { document.getElementById('modal-menu').classList.remove('active'); }
+
+let rulesReturnTarget = 'setup';
+function openFromMenu(screenId) {
+  closeMenu();
+  rulesReturnTarget = 'score';
+  showScreen(screenId);
+}
+function returnFromRules() {
+  const target = rulesReturnTarget;
+  rulesReturnTarget = 'setup';
+  showScreen(target);
+  if (target === 'score') renderCurrent();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+document.addEventListener('dblclick', e => e.preventDefault());
+function renderCurrent() {
+  if (currentMode === 'doppel') renderDoppel(); else renderAll();
+}
+function showCourt(mode) {
+  document.getElementById('court-area').style.display   = mode === 'einzel' ? '' : 'none';
+  document.getElementById('court-doppel').style.display = mode === 'doppel' ? '' : 'none';
+  document.getElementById('btn-player-change').style.display = mode === 'doppel' ? '' : 'none';
+}
+window.addEventListener('resize', () => { if (document.getElementById('score').classList.contains('active')) renderCurrent(); });
+
+// ══════════════════════════════════════════════
+//  MODE (Einzel / Doppel)
+// ══════════════════════════════════════════════
+let currentMode = 'einzel';
+let dblFirstServe = 'home';
+let dblFirstPlayer = { home: 1, guest: 1 }; // which player in team serves first
+
+function setMode(m) {
+  currentMode = m;
+  document.getElementById('mode-einzel').classList.toggle('active', m === 'einzel');
+  document.getElementById('mode-doppel').classList.toggle('active', m === 'doppel');
+  document.getElementById('setup-einzel').style.display = m === 'einzel' ? '' : 'none';
+  document.getElementById('setup-doppel').style.display = m === 'doppel' ? '' : 'none';
+  document.getElementById('btn-start').textContent = m === 'einzel' ? '▶ Einzel starten' : '▶ Doppel starten';
+}
+
+function setDblFirstServe(side) {
+  dblFirstServe = side;
+  document.getElementById('dbl-serve-home').classList.toggle('active', side === 'home');
+  document.getElementById('dbl-serve-guest').classList.toggle('active', side === 'guest');
+}
+
+function setDblFirstPlayer(team, n) {
+  dblFirstPlayer[team] = n;
+  document.getElementById(`dbl-first-${team === 'home' ? 'h' : 'g'}1`).classList.toggle('active', n === 1);
+  document.getElementById(`dbl-first-${team === 'home' ? 'h' : 'g'}2`).classList.toggle('active', n === 2);
+}
+
+function startGame() {
+  if (currentMode === 'doppel') startDoppel();
+  else startMatch();
+}
+
+// ══════════════════════════════════════════════
+//  DOPPEL STATE
+// ══════════════════════════════════════════════
+/* Doppel serve rotation (BTV rules):
+   - 4 players serve in fixed order: e.g. H1 → G1 → H2 → G2 → H1 ...
+   - Within a service game the server alternates sides: R → L → R → L
+   - The server's partner switches net side when server changes side
+   - Receivers keep their fixed sides throughout the set
+   - Receiver can choose side before tiebreak
+*/
+let dblState = null;
+
+function freshDblState(names) {
+  // serving team & player index
+  const servingTeam = dblFirstServe; // 'home'|'guest'
+  const servingPlayerIdx = dblFirstPlayer[servingTeam] - 1; // 0|1
+  // serve order: servingTeam player 0/1, then opponent player (firstPlayer), then servingTeam other, then opponent other
+  // Standard: H1→G1→H2→G2 or based on chosen first servers
+  const homeFirst = dblFirstPlayer.home - 1; // 0|1
+  const guestFirst = dblFirstPlayer.guest - 1;
+  // Build rotation: [team,playerIdx] × 4
+  let rotation;
+  if (servingTeam === 'home') {
+    rotation = [
+      ['home', homeFirst],
+      ['guest', guestFirst],
+      ['home', 1 - homeFirst],
+      ['guest', 1 - guestFirst],
+    ];
+  } else {
+    rotation = [
+      ['guest', guestFirst],
+      ['home', homeFirst],
+      ['guest', 1 - guestFirst],
+      ['home', 1 - homeFirst],
+    ];
+  }
+
+  // Receiver fixed sides: opponents of first server
+  // At start: server on right (R), server's partner at net on L
+  // Receiver 1 on right, Receiver 2 on left (fixed for set)
+  const recvTeam = servingTeam === 'home' ? 'guest' : 'home';
+  const recvFirstIdx = dblFirstPlayer[recvTeam] - 1;
+  // recvSides: which side each receiver is on. Fixed per set.
+  // receiver at index recvFirstIdx → right (deuce court), other → left (ad court)
+  const recvSides = {};
+  recvSides[recvFirstIdx] = 'right';   // deuce court receiver
+  recvSides[1 - recvFirstIdx] = 'left'; // ad court receiver
+
+  return {
+    mode: 'doppel',
+    names, // { home:[n1,n2], guest:[n1,n2] }
+    sets: { home: 0, guest: 0 },
+    setScores: [],
+    currentSet: 1,
+    games: { home: 0, guest: 0 },
+    gamesInSet: 0,
+    points: { home: 0, guest: 0 },
+    phase: 'set',
+    tbPoints: { home: 0, guest: 0 },
+    tbTotal: 0,
+    sidesSwapped: false,
+    visualSwapped: false,
+    finished: false,
+    // Doppel-specific
+    rotation,           // [{team,playerIdx}×4]
+    rotationIdx: 0,     // current server in rotation
+    pointInGame: 0,     // 0=right side, 1=left, 2=right... (server alternates per point)
+    recvSides,          // {0:'right'|'left', 1:'right'|'left'} for receiving team
+    servingTeam,
+    setFirstRotIdx: 0,  // rotation index at start of set (to restore between sets)
+    setFirstRecvSides: {...recvSides},
+    setFirstServer: servingTeam,
+  };
+}
+
+function startDoppel() {
+  const h1 = document.getElementById('dbl-h1').value.trim() || 'Spieler 1';
+  const h2 = document.getElementById('dbl-h2').value.trim() || 'Spieler 2';
+  const g1 = document.getElementById('dbl-g1').value.trim() || 'Spieler 1';
+  const g2 = document.getElementById('dbl-g2').value.trim() || 'Spieler 2';
+  const names = { home: [h1, h2], guest: [g1, g2] };
+  dblState = freshDblState(names);
+  if (setupSidesSwapped) { dblState.sidesSwapped = true; dblState.visualSwapped = true; }
+  history = [];
+  matchResult = null;
+  currentMode = 'doppel';
+  showCourt('doppel');
+  state = dblState; // share state for scoring/set logic
+  showScreen('score');
+  renderDoppel();
+}
+
+// ── Doppel serve helpers ──────────────────────
+function dblCurrentServer() {
+  return dblState.rotation[dblState.rotationIdx % 4];
+}
+
+function dblServingSide() {
+  // 0,2,4... = right (deuce), 1,3,5... = left (ad)
+  return dblState.pointInGame % 2 === 0 ? 'Rechts' : 'Links';
+}
+
+function dblServerPartnerSide() {
+  // U9 Sonderregel: beim Aufschlag stehen BEIDE Spieler der Aufschlagseite hinter der Grundlinie
+  // Partner steht auf der anderen Seite der Grundlinie (nicht am Netz!)
+  return dblState.pointInGame % 2 === 0 ? 'Links' : 'Rechts';
+}
+
+function dblAdvanceServer() {
+  dblState.rotationIdx = (dblState.rotationIdx + 1) % 4;
+  dblState.pointInGame = 0;
+  dblState.servingTeam = dblState.rotation[dblState.rotationIdx % 4][0];
+}
+
+// ── Doppel winGame override ───────────────────
+function dblWinGame(player) {
+  dblState.points = { home: 0, guest: 0 };
+  dblState.games[player]++;
+  dblState.gamesInSet++;
+  dblAdvanceServer();
+
+  const h = dblState.games.home, g = dblState.games.guest;
+
+  if (h === 4 && g === 4) {
+    const sc = dblCheckSideChange();
+    const startTB = () => showDblTBSideChoice();
+    if (sc) { dblSwapSides(); triggerSideModal(startTB); }
+    else startTB();
+    return;
+  }
+
+  const ahead = Math.max(h,g), diff = ahead - Math.min(h,g);
+  if (ahead >= 4 && diff >= 2) {
+    const sc = dblCheckSideChange();
+    if (sc) { dblSwapSides(); triggerSideModal(() => dblWinSet(player)); }
+    else dblWinSet(player);
+    return;
+  }
+
+  if (dblCheckSideChange()) { dblSwapSides(); triggerSideModal(() => renderDoppel()); }
+  else renderDoppel();
+}
+
+function dblCheckSideChange() {
+  const g = dblState.gamesInSet;
+  return g === 1 || g === 3 || g === 5 || g === 7;
+}
+
+function dblSwapSides() {
+  dblState.sidesSwapped = !dblState.sidesSwapped;
+  dblState.visualSwapped = !dblState.visualSwapped;
+  // recvSides speichert logische Deuce/Ad-Werte — bleiben beim Seitenwechsel unverändert.
+  // Die physische Darstellung dreht sich durch visualSwapped automatisch.
+}
+
+function dblWinSet(player, fromTB = false) {
+  const sc = { home: dblState.games.home, guest: dblState.games.guest };
+  if (fromTB) sc.tb = { home: dblState.tbPoints.home, guest: dblState.tbPoints.guest };
+  dblState.setScores.push(sc);
+  dblState.sets[player]++;
+  const setNum = dblState.currentSet;
+  const line = `${sc.home}:${sc.guest}${fromTB ? ` (TB ${sc.tb.home}:${sc.tb.guest})` : ''}`;
+
+  dblState.games = { home: 0, guest: 0 };
+  dblState.points = { home: 0, guest: 0 };
+  dblState.tbPoints = { home: 0, guest: 0 };
+  dblState.tbTotal = 0;
+  dblState.gamesInSet = 0;
+  dblState.phase = 'set';
+  dblState.currentSet++;
+  dblSwapSides();
+  // Next set: rotation continues from next server in sequence
+  // (dblAdvanceServer was called last winGame, so rotationIdx is already next)
+  dblState.setFirstRotIdx = dblState.rotationIdx;
+
+  if (dblState.sets.home === 1 && dblState.sets.guest === 1) {
+    dblState.phase = 'matchtb';
+    dblState.tbPoints = { home: 0, guest: 0 };
+    dblState.tbTotal = 0;
+    showSetModal(`Satz ${setNum}: ${dblState.names[player][0]} / ${dblState.names[player][1]}!`,
+      `${line}
+
+⇄ Seitenwechsel!
+→ Match-Tiebreak bis 10`, () => renderDoppel());
+    return;
+  }
+  if (dblState.sets[player] === 2) {
+    showSetModal(`Satz ${setNum}: ${dblState.names[player][0]} / ${dblState.names[player][1]}!`,
+      `${line}
+
+⇄ Seitenwechsel!`, () => dblWinMatch(player));
+    return;
+  }
+  showSetModal(`Satz ${setNum}: ${dblState.names[player][0]} / ${dblState.names[player][1]}!`,
+    `${line}
+
+⇄ Seitenwechsel!`, () => renderDoppel());
+}
+
+function dblWinMatch(player) {
+  dblState.finished = true;
+  const loser = player === 'home' ? 'guest' : 'home';
+  const parts = dblState.setScores.map(s => `${s.home}:${s.guest}${s.tb ? ` (TB ${s.tb.home}:${s.tb.guest})` : ''}`);
+  if (dblState.phase === 'matchtb') parts.push(`MT ${dblState.tbPoints.home}:${dblState.tbPoints.guest}`);
+
+  matchResult = {
+    winner: dblState.names[player].join(' / '),
+    loser: dblState.names[loser].join(' / '),
+    winnerSide: player === 'home' ? 'Heim' : 'Gast',
+    loserSide: player === 'home' ? 'Gast' : 'Heim',
+    sets: { home: dblState.sets.home, guest: dblState.sets.guest },
+    setScores: dblState.setScores,
+    mtPoints: dblState.phase === 'matchtb' ? { home: dblState.tbPoints.home, guest: dblState.tbPoints.guest } : null,
+    scoreParts: parts,
+    date: new Date().toLocaleDateString('de-DE', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
+    time: new Date().toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }),
+    names: { home: dblState.names.home.join(' / '), guest: dblState.names.guest.join(' / ') },
+    rawHome: dblState.names.home.join('-'),
+    rawGuest: dblState.names.guest.join('-'),
+    modus: 'Doppel',
+  };
+
+  document.getElementById('winner-name').textContent = dblState.names[player].join(' / ');
+  document.getElementById('ws-score-line').textContent = parts.join('   ');
+  document.getElementById('ws-score-detail').textContent =
+    `${dblState.names.home.join(' / ')} (Heim) vs. ${dblState.names.guest.join(' / ')} (Gast)\nSätze: ${dblState.sets.home}:${dblState.sets.guest}`;
+  showScreen('winner');
+}
+
+function showDblTBSideChoice() {
+  const srv = dblCurrentServer();
+  const recvTeam = srv[0] === 'home' ? 'guest' : 'home';
+  const recvName = dblState.names[recvTeam].join(' / ');
+  document.getElementById('tbside-receiver').textContent = recvName;
+  document.getElementById('tbside-btn-left').textContent = '◀ Links · ' + recvName;
+  document.getElementById('tbside-btn-right').textContent = recvName + ' · Rechts ▶';
+  document.getElementById('tbside-modal-title').textContent = 'Satz-Tiebreak!';
+  document.getElementById('modal-tbside').classList.add('active');
+}
+
+// ── Doppel score point ─────────────────────
+function dblScorePoint(player) {
+  if (dblState.finished) return;
+  history.push(JSON.parse(JSON.stringify(dblState)));
+  if (dblState.phase === 'tiebreak' || dblState.phase === 'matchtb') {
+    dblScoreTBPoint(player);
+  } else {
+    dblScoreNormalPoint(player);
+  }
+}
+
+function dblScoreNormalPoint(player) {
+  // No-Ad: Bei 40:40 entscheidet der nächste Tap das Game direkt
+  if (dblState.points.home === 3 && dblState.points.guest === 3) {
+    dblWinGame(player);
+    return;
+  }
+  dblState.points[player]++;
+  dblState.pointInGame++;
+  if (dblState.points.home === 3 && dblState.points.guest === 3) {
+    // No-Ad: show modal with side choice
+    const srv = dblCurrentServer();
+    const recvTeam = srv[0] === 'home' ? 'guest' : 'home';
+    const recvName = dblState.names[recvTeam].join(' / ');
+    document.getElementById('noad-receiver').textContent = recvName;
+    document.getElementById('noad-side-left').textContent = '◀ Links · ' + recvName;
+    document.getElementById('noad-side-right').textContent = recvName + ' · Rechts ▶';
+    document.getElementById('modal-noad').classList.add('active');
+    renderDoppel(); return;
+  }
+  if (dblState.points[player] > 3) dblWinGame(player);
+  else renderDoppel();
+}
+
+function dblScoreTBPoint(player) {
+  const isMatch = dblState.phase === 'matchtb';
+  const target = isMatch ? 10 : 7;
+  dblState.tbPoints[player]++;
+  dblState.tbTotal++;
+
+  // TB serve: switch after 1st point, then every 2
+  if (dblState.tbTotal === 1 || (dblState.tbTotal > 1 && (dblState.tbTotal - 1) % 2 === 0)) {
+    dblAdvanceServer();
+  }
+
+  if (dblState.tbTotal > 0 && dblState.tbTotal % 6 === 0) {
+    dblSwapSides();
+    const h = dblState.tbPoints.home, g = dblState.tbPoints.guest;
+    if (!(Math.max(h,g) >= target && Math.abs(h-g) >= 2)) {
+      triggerSideModal(() => renderDoppel()); return;
+    }
+  }
+
+  const h = dblState.tbPoints.home, g = dblState.tbPoints.guest;
+  if (Math.max(h,g) >= target && Math.abs(h-g) >= 2) {
+    const winner = h > g ? 'home' : 'guest';
+    if (isMatch) dblWinMatch(winner); else dblWinSet(winner, true);
+    return;
+  }
+  renderDoppel();
+}
+
+// ── Doppel render ──────────────────────────
+function renderDoppel() {
+  const ds = dblState;
+  if (!ds) return;
+
+  // Scoreboard names (team)
+  document.getElementById('sb-name-home').textContent = ds.names.home.join(' / ');
+  document.getElementById('sb-name-guest').textContent = ds.names.guest.join(' / ');
+  document.getElementById('sb-name-home').className = 'player-name-sb dbl-team';
+  document.getElementById('sb-name-guest').className = 'player-name-sb dbl-team';
+
+  // Serve dots on zone
+  const srv = dblCurrentServer();
+  document.getElementById('dbl-zone-home').classList.toggle('serving', srv[0] === 'home');
+  document.getElementById('dbl-zone-guest').classList.toggle('serving', srv[0] === 'guest');
+
+  // Visual swap
+  document.getElementById('court-doppel').classList.toggle('swapped', !!ds.visualSwapped);
+
+  // Side labels
+  const homeLeft = !ds.visualSwapped;
+  document.getElementById('dbl-side-home').textContent = homeLeft ? '◀ Links' : 'Rechts ▶';
+  document.getElementById('dbl-side-guest').textContent = homeLeft ? '▶ Rechts' : '◀ Links';
+
+  // Points
+  if (ds.phase === 'tiebreak' || ds.phase === 'matchtb') {
+    document.getElementById('dbl-point-home').textContent = ds.tbPoints.home;
+    document.getElementById('dbl-point-guest').textContent = ds.tbPoints.guest;
+    document.getElementById('sb-game-home').textContent = ds.tbPoints.home;
+    document.getElementById('sb-game-guest').textContent = ds.tbPoints.guest;
+  } else {
+    document.getElementById('dbl-point-home').textContent = POINTS[ds.points.home] || '0';
+    document.getElementById('dbl-point-guest').textContent = POINTS[ds.points.guest] || '0';
+    document.getElementById('sb-game-home').textContent = ds.games.home;
+    document.getElementById('sb-game-guest').textContent = ds.games.guest;
+  }
+
+  // Set scores
+  const cols = ['s1','s2','s3'];
+  for (let i = 0; i < 3; i++) {
+    const sc = ds.setScores[i];
+    const hEl = document.getElementById(`sb-${cols[i]}-home`);
+    const gEl = document.getElementById(`sb-${cols[i]}-guest`);
+    if (sc !== undefined) {
+      const tbH = sc.tb ? `(${sc.tb.home})` : '';
+      const tbG = sc.tb ? `(${sc.tb.guest})` : '';
+      hEl.innerHTML = sc.home + (tbH ? `<span class="tb-small">${tbH}</span>` : '');
+      gEl.innerHTML = sc.guest + (tbG ? `<span class="tb-small">${tbG}</span>` : '');
+      const w = sc.home > sc.guest ? 'home' : 'guest';
+      hEl.className = 'set-score' + (w==='home' ? ' won' : '');
+      gEl.className = 'set-score' + (w==='guest' ? ' won' : '');
+    } else if (i === ds.currentSet - 1) {
+      if (ds.phase === 'matchtb') {
+        hEl.textContent = 'MT'; gEl.textContent = 'MT';
+      } else if (ds.phase === 'tiebreak') {
+        hEl.textContent = ds.games.home; gEl.textContent = ds.games.guest;
+      } else {
+        hEl.textContent = '–'; gEl.textContent = '–';
+      }
+      hEl.className = 'set-score current'; gEl.className = 'set-score current';
+    } else {
+      hEl.textContent = '–'; gEl.textContent = '–';
+      hEl.className = 'set-score';
+    }
+  }
+
+  // Phase label & banner
+  const phLabel = ds.phase==='matchtb' ? 'Match-Tiebreak' : ds.phase==='tiebreak' ? 'Tiebreak' : `Satz ${Math.min(ds.currentSet,2)} · Doppel`;
+  document.getElementById('phase-label').textContent = phLabel;
+  const banner = document.getElementById('phase-banner');
+  if (ds.phase==='matchtb') { banner.textContent='Match-Tiebreak · Bis 10 · Seitenwechsel bei 6'; banner.className='phase-banner matchtb'; }
+  else if (ds.phase==='tiebreak') { banner.textContent='Satz-Tiebreak · Bis 7 · 2 Punkte Abstand'; banner.className='phase-banner tiebreak'; }
+  else { banner.textContent=`Satz ${Math.min(ds.currentSet,2)} · Min. 4 Spiele · 2 Vorsprung · No-Ad`; banner.className='phase-banner normal'; }
+
+  // Side change banner
+  const showSideBanner = (ds.phase==='set'||ds.phase==='tiebreak') &&
+    (ds.gamesInSet===1||ds.gamesInSet===3||ds.gamesInSet===5||ds.gamesInSet===7);
+  document.getElementById('side-banner').classList.toggle('visible', showSideBanner);
+
+  // ── Player position display (U9 Doppel) ──
+  // Alle Spieler an der Grundlinie (U9-Sonderregel).
+  // Aufschlagteam: Aufschläger auf Deuce oder Ad, Partner auf anderer Seite.
+  // Returnteam: feste Seiten (Deuce/Ad) für den gesamten Satz.
+  // Seitenwechsel: visualSwapped tauscht Feldhälften, logische Deuce/Ad bleiben.
+  const servSide = ds.pointInGame % 2 === 0 ? 'right' : 'left'; // Deuce=rechts, Ad=links
+  const partnerSide = servSide === 'right' ? 'left' : 'right';
+
+  // Slot→Tennis-Seite: Deuce ist immer rechts vom jeweiligen Team aus dessen
+  // Spielperspektive → diagonale Anordnung auf dem Bildschirm. Nach Seitenwechsel
+  // (visualSwapped) tauschen p1/p2 ihre Tennis-Seiten je Team.
+  const slotSidesForTeam = (team) => {
+    const sides = team === 'home'
+      ? { p1: 'right', p2: 'left' }
+      : { p1: 'left',  p2: 'right' };
+    if (ds.visualSwapped) {
+      return { p1: sides.p2, p2: sides.p1 };
+    }
+    return sides;
+  };
+
+  // Pfeil zeigt zur Außenkante des Slots; Wort hängt von der Tennis-Seite ab.
+  const slotLabel = (slotNum, tennisSide) => {
+    const word = tennisSide === 'right' ? 'Deuce' : 'Ad';
+    return slotNum === 1 ? `◀ ${word}` : `${word} ▶`;
+  };
+
+  ['home','guest'].forEach(team => {
+    const isServing = srv[0] === team;
+    const p1id = team === 'home' ? 'h1' : 'g1';
+    const p2id = team === 'home' ? 'h2' : 'g2';
+
+    let p1side, p2side, p1server = false, p2server = false;
+
+    if (isServing) {
+      // Aufschläger auf Deuce oder Ad, Partner auf anderer Seite — beide Grundlinie
+      const serverIdx = srv[1];
+      if (serverIdx === 0) {
+        p1side = servSide; p1server = true; p2side = partnerSide;
+      } else {
+        p2side = servSide; p2server = true; p1side = partnerSide;
+      }
+    } else {
+      // Returnteam: feste Deuce/Ad-Seiten für den Satz
+      p1side = ds.recvSides[0] || 'right';
+      p2side = ds.recvSides[1] || 'left';
+    }
+
+    // Welche Tennis-Seite zeigt p1- bzw. p2-Slot dieses Teams in dieser Orientierung?
+    const slotSides = slotSidesForTeam(team);
+    const player1InP1Slot = (p1side === slotSides.p1);
+
+    const slot1 = {
+      name:   ds.names[team][player1InP1Slot ? 0 : 1],
+      server: player1InP1Slot ? p1server : p2server,
+    };
+    const slot2 = {
+      name:   ds.names[team][player1InP1Slot ? 1 : 0],
+      server: player1InP1Slot ? p2server : p1server,
+    };
+
+    document.getElementById(`dbl-${p1id}-name`).textContent = slot1.name;
+    document.getElementById(`dbl-${p2id}-name`).textContent = slot2.name;
+    document.getElementById(`dbl-${p1id}-pos`).textContent  = slotLabel(1, slotSides.p1);
+    document.getElementById(`dbl-${p2id}-pos`).textContent  = slotLabel(2, slotSides.p2);
+
+    const s1 = document.getElementById(`dbl-${p1id}-slot`);
+    const s2 = document.getElementById(`dbl-${p2id}-slot`);
+    s1.classList.toggle('is-server', slot1.server);
+    s2.classList.toggle('is-server', slot2.server);
+    document.getElementById(`dbl-${p1id}-serve`).style.display = slot1.server ? '' : 'none';
+    document.getElementById(`dbl-${p2id}-serve`).style.display = slot2.server ? '' : 'none';
+
+    // Serve info: nur beim aufschlagenden Team
+    const infoEl = document.getElementById(`dbl-${team}-serve-info`);
+    if (isServing) {
+      const serverName = ds.names[team][srv[1]];
+      infoEl.textContent = `🎾 ${serverName} · ${servSide === 'right' ? 'Deuce' : 'Ad'}-Seite · Beide an Grundlinie`;
+    } else {
+      infoEl.textContent = '';
+    }
+  });
+
+  // Menu score
+  document.getElementById('menu-score-text').textContent =
+    `${ds.names.home.join('/')} ${ds.sets.home}:${ds.sets.guest} ${ds.names.guest.join('/')}
+` +
+    `Spiele: ${ds.games.home}:${ds.games.guest}
+` +
+    `Aufschlag: ${ds.names[srv[0]][srv[1]]} (${ds.names[srv[0]].join('/')})`;
+}
+
+</script>
+
+<!-- Querformat-Hinweis (CSS-only, siehe TODO.md) -->
+<div id="orientation-hint">
+  <div class="ohint-icon">📱</div>
+  <div class="ohint-title">Bitte ins Hochformat drehen</div>
+  <div class="ohint-text">Diese Version unterstützt nur das Hochformat. Bitte drehe dein Gerät zurück, um die Anzeige bestmöglich zu nutzen.</div>
+</div>
+
+<script>
+  // Service Worker für Offline-Unterstützung
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registered'))
+      .catch(err => console.log('SW registration failed:', err));
+  }
+</script>
+</body>
+</html>

@@ -29,7 +29,7 @@ Entwickelt für Eltern, die während eines Spiels mitzählen und andere Eltern o
 
 **Version 1.4** (2026-05-17)
 
-- Bugfix: Seitenwechsel im Match-Tiebreak findet nun korrekt nach jeweils 6 gespielten Punkten in Summe statt (6, 12, 18, …) — vorher nur einmal bei 6
+- Bugfix: Seitenwechsel im Satz-Tiebreak und Match-Tiebreak findet nun korrekt nach jeweils 6 gespielten Punkten in Summe statt (6, 12, 18, …) — vorher nur einmal bei 6
 - Modal-Text beim Seitenwechsel zeigt nun die tatsächlich gespielten Punkte (`12 Punkte gespielt` statt fest `6 Punkte gespielt`)
 - Neuer Querformat-Hinweis: Vollbild-Overlay erscheint im Querformat mit Aufforderung, das Gerät ins Hochformat zu drehen (CSS-only, kein JS)
 
@@ -61,7 +61,7 @@ Es gelten die BTV-Ausschreibungsregeln für U9 Kleinfeld Südbayern 2026 (Stand 
 - No-Ad bei 40:40 — Rückschläger wählt Einschlagseite
 - Bei 4:4 → Satz-Tiebreak bis 7 (Rückschläger wählt Seite)
 - Bei 1:1 Sätzen → Match-Tiebreak bis 10
-- Seitenwechsel nach Spielstand 1, 3, 5, 7 sowie nach jedem Satz und bei 6 Punkten im Match-Tiebreak
+- Seitenwechsel nach Spielstand 1, 3, 5, 7 sowie nach jedem Satz und bei jeweils 6 Punkten in Satz- und Match-Tiebreak (6, 12, 18, …)
 
 ### Installation (als Web-App)
 

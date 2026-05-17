@@ -128,14 +128,14 @@
     </div>
 
     <div class="version">
-      Version 1.4 · Powered by GitHub Pages
+      Version 1.5 · Powered by GitHub Pages
     </div>
   </div>
 
   <script>
     // Registriere Service Worker für Offline-Unterstützung
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
+      navigator.serviceWorker.register('tennis-score/ios/service-worker.js')
         .then(reg => {
           console.log('Service Worker registered:', reg);
         })

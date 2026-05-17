@@ -1,76 +1,60 @@
-# Sport Apps
+# BTV U9 Kleinfeld Score
 
-Web-Apps für den Einsatz bei Sportturnieren — optimiert für die mobile Nutzung vor Ort.
+Tennis-Scoring-App für BTV/DTB U9 Turniere — kostenlos, offline, ohne Anmeldung.
 
-## tennis-score — BTV U9 Kleinfeld Score
+## Features
 
-Punktezähler für Tennisturniere im BTV-Format U9 Kleinfeld (Südbayern 2026).
+- ✅ **Offline-fähig** — funktioniert vollständig ohne Internetverbindung
+- ✅ **Einfache Bedienung** — optimiert für den Tennisplatz
+- ✅ **Automatische Berechnung** — Punkte, Spiele, Sätze nach BTV-Regeln
+- ✅ **PDF-Export** — Ergebnisse ausdrucken oder teilen
+- ✅ **Kostenlos & Open Source** — Hosting über GitHub Pages
 
-Entwickelt für Eltern, die während eines Spiels mitzählen und andere Eltern ohne Tennis-Kenntnisse unterstützen möchten.
+## Installation
 
-### Dateien
+### iPhone/iPad (iOS)
 
-- [tennis-score/btv_u9_score_ios.html](tennis-score/btv_u9_score_ios.html) — für iPhone / iPad optimiert (Version 1.4)
-- [tennis-score/btv_u9_score_android.html](tennis-score/btv_u9_score_android.html) — für Android optimiert (Version 1.4)
+1. Safari öffnen: [https://markbele83.github.io/sport-apps/tennis-score/ios/](https://markbele83.github.io/sport-apps/tennis-score/ios/)
+2. Teilen-Symbol (↗) antippen
+3. „Zum Home-Bildschirm" wählen
+4. App ist jetzt wie eine native App nutzbar
 
-### Funktionen
+### Android
 
-- Einzel und Doppel (mit vollständiger Aufschlag-Rotation nach BTV-Regeln)
-- Automatische Zählweise nach BTV U9-Regeln: Kurzsätze, No-Ad, Satz-Tiebreak, Match-Tiebreak
-- Seitenwechsel-Anzeige mit Hinweisfenster
-- Aufschlag-Anzeige (Deuce/Ad) und manuelle Korrekturmöglichkeit
-- Rückgängig-Funktion für Fehleingaben
-- Hochformat-Layout für mobile Geräte (Querformat zurückgestellt, siehe [tennis-score/TODO.md](tennis-score/TODO.md))
-- Ergebnis als PDF drucken/teilen
-- Eingebauter Regelguide mit detaillierten Team-Aufstellungsregeln und Bedienungsanleitung
-- In-Spiel-Menü für Zugriff auf Regelguide und Bedienung ohne Spielunterbrechung
+1. Chrome öffnen: [https://markbele83.github.io/sport-apps/tennis-score/android/](https://markbele83.github.io/sport-apps/tennis-score/android/)
+2. Menü (⋮) antippen
+3. „Zum Startbildschirm hinzufügen" wählen
+4. App ist jetzt wie eine native App nutzbar
 
-### Changelog
+## Offline-Nutzung
 
-**Version 1.4** (2026-05-17)
+Die App funktioniert vollständig offline:
 
-- Bugfix: Seitenwechsel im Satz-Tiebreak und Match-Tiebreak findet nun korrekt nach jeweils 6 gespielten Punkten in Summe statt (6, 12, 18, …) — vorher nur einmal bei 6
-- Modal-Text beim Seitenwechsel zeigt nun die tatsächlich gespielten Punkte (`12 Punkte gespielt` statt fest `6 Punkte gespielt`)
-- Neuer Querformat-Hinweis: Vollbild-Overlay erscheint im Querformat mit Aufforderung, das Gerät ins Hochformat zu drehen (CSS-only, kein JS)
+- Alle Daten werden **lokal im Gerät gespeichert**
+- Keine Internetverbindung notwendig
+- Service Worker ermöglicht Offline-Funktionalität
+- Ideal für den Tennisplatz ohne Mobilfunknetz
 
-**Version 1.3** (2026-05-17)
+## Datenschutz
 
-- Querformat-Layout vollständig entfernt (zurückgestellt für spätere Wiederaufnahme)
-- Fokus auf Stabilisierung und Test des Hochformat-Layouts
-- Vereinfachte Doppel-Slot-Berechnung (keine Orientierungs-Abzweigungen mehr)
-- Entfernung des `orientationchange`-Event-Listeners
-- Bisherige Querformat-Implementierung dokumentiert in [tennis-score/TODO.md](tennis-score/TODO.md) mit vollständigen Code-Snippets und Wiederaufnahme-Checkliste
-
-**Version 1.2** (2026-05-16)
-
-- Bugfix: 40:40-Punkt-Eintrag funktioniert jetzt korrekt — Tap auf Spieler bei 40:40 gewinnt Spiel sofort
-- Bugfix: No-Ad und Satz-Tiebreak-Seitenwahl tauschen nicht mehr die Spielhälften, sondern setzen nur die Aufschlagseite innerhalb der Spielhälfte
-- Feature: Regelguide und Bedienung sind jetzt über In-Spiel-Menü zugänglich, ohne das Spiel zu unterbrechen
-- Erweitert: Neue Sektion „Aufstellung der Teams" im Regelguide mit detaillierten Regeln zu Spieler-Positionen und Aufschlag-Rotation
-- Dokumentation: Bedienungsanleitung aktualisiert mit Erklärungen zu 40:40-Regel, Deuce/Ad-Anzeige und in-Spiel-Menü-Nutzung
-
-**Version 1.0** (2026-04-24)
-
-- Initiale Version mit Einzel-, Doppel- und Match-Tiebreak-Unterstützung
-
-### Regeln
-
-Es gelten die BTV-Ausschreibungsregeln für U9 Kleinfeld Südbayern 2026 (Stand 24.04.2026):
-
-- 2 Kurzsätze mit mindestens 2 Spielen Vorsprung
-- No-Ad bei 40:40 — Rückschläger wählt Einschlagseite
-- Bei 4:4 → Satz-Tiebreak bis 7 (Rückschläger wählt Seite)
-- Bei 1:1 Sätzen → Match-Tiebreak bis 10
-- Seitenwechsel nach Spielstand 1, 3, 5, 7 sowie nach jedem Satz und bei jeweils 6 Punkten in Satz- und Match-Tiebreak (6, 12, 18, …)
-
-### Installation (als Web-App)
-
-**iOS:** Safari → Teilen-Symbol → „Zum Home-Bildschirm"
-
-**Android:** Chrome → Menü (⋮) → „Zum Startbildschirm hinzufügen"
-
-Die App läuft dann ohne Browser-Leiste im Vollbild.
+- ✅ **Keine Datenübertragung** — alle Daten bleiben auf deinem Gerät
+- ✅ **Keine Anmeldung** — keine Konten oder Logins nötig
+- ✅ **Keine Tracker** — keine Analytics oder Werbung
+- ✅ **Lokal gespeichert** — Browser-Cache speichert Daten zwischen den Starts
 
 ## Lizenz
 
-© 2026 Markus Ströbele — Nutzung ohne Gewähr. Nur für private, nicht-kommerzielle Nutzung.
+Diese App ist kostenlos und open source. Sie darf frei für private, nicht-kommerzielle Zwecke genutzt werden.
+
+© 2026 Markus Ströbele
+
+Nutzung ohne Gewähr. Nur für private, nicht-kommerzielle Nutzung.
+
+## Support
+
+Fragen oder Probleme? Schreibe ein Issue auf GitHub:
+[github.com/MarkBele83/sport-apps](https://github.com/MarkBele83/sport-apps)
+
+---
+
+**Hosting:** GitHub Pages · **Version:** 1.4 · **BTV Südbayern 2026**

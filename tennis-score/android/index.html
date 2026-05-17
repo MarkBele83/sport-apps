@@ -6,8 +6,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#2e7d52">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232e7d52' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>S</text></svg>">
-<title>BTV U9 Kleinfeld Score · Android 1.4</title>
+<link rel="icon" href="../../icon.png">
+<link rel="apple-touch-icon" href="../../icon.png">
+<title>BTV U9 Kleinfeld Score · Android 1.5</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;500;700&display=swap');
 
@@ -115,6 +116,35 @@
     box-shadow: 0 4px 14px rgba(30,100,60,0.2);
   }
   .btn-start:active { opacity: 0.88; transform: scale(0.98); }
+
+  /* ══════════ INSTALLATION MODAL ══════════ */
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
+  .modal-overlay.active { display: flex; align-items: center; justify-content: center; }
+  .modal-content {
+    background: var(--white); border-radius: 20px; padding: 24px; max-width: 400px; max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .modal-header { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--text); margin-bottom: 16px; }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; color: var(--green); text-transform: uppercase; margin-bottom: 10px; }
+  .modal-section-content { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+  .modal-section-content ol { margin-left: 20px; }
+  .modal-section-content li { margin-bottom: 8px; }
+  .modal-section-content strong { color: var(--text); }
+  .browser-tabs { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+  .browser-tab {
+    border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--bg);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .browser-tab:active { background: var(--green-light); border-color: var(--green); }
+  .browser-tab-title { font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .browser-tab-steps { font-size: 12px; color: var(--text-mid); line-height: 1.5; }
+  .modal-close {
+    background: var(--green); color: white; border: none; border-radius: 12px;
+    padding: 12px 24px; font-family: 'Bebas Neue', sans-serif; font-size: 16px;
+    letter-spacing: 1px; cursor: pointer; width: 100%; margin-top: 16px;
+  }
+  .modal-close:active { opacity: 0.88; }
 
   /* ══════════ SCORE SCREEN ══════════ */
   #score { background: var(--bg); flex-direction: column; }
@@ -401,6 +431,54 @@
 </head>
 <body>
 
+<!-- ══ INSTALLATION MODAL ══ -->
+<div id="installModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">🚀 App installieren</div>
+    <div class="modal-section">
+      <div class="modal-section-title">Chrome / Edge (einfach)</div>
+      <div class="modal-section-content">
+        <ol>
+          <li>Öffne diese Seite in <strong>Chrome</strong> oder <strong>Edge</strong></li>
+          <li>Tippe auf das Menü (⋮) oben rechts</li>
+          <li>Wähle <strong>"Auf dem Startbildschirm installieren"</strong></li>
+          <li>Bestätige die Installation</li>
+        </ol>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Firefox / Edge (Verknüpfung)</div>
+      <div class="modal-section-content">
+        Firefox und Edge haben limitierte PWA-Unterstützung auf Android. Als Alternative kannst du eine Verknüpfung erstellen:
+      </div>
+      <div class="browser-tabs">
+        <div class="browser-tab">
+          <div class="browser-tab-title">🦊 Firefox</div>
+          <div class="browser-tab-steps">
+            1. Lange auf diese Seite drücken<br>
+            2. Wähle <strong>"Link zum Startbildschirm"</strong><br>
+            3. Bestätige mit "Verknüpfung hinzufügen"
+          </div>
+        </div>
+        <div class="browser-tab">
+          <div class="browser-tab-title">🌀 Edge</div>
+          <div class="browser-tab-steps">
+            1. Tippe auf das Menü (⋮)<br>
+            2. Wähle <strong>"Zu Startbildschirm hinzufügen"</strong><br>
+            3. Bestätige mit "Hinzufügen"
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-content" style="font-size:12px;color:var(--text-light);margin:0;">
+        💡 <strong>Tipp:</strong> Chrome bietet die beste PWA-Erfahrung mit echtem App-Icon und Offline-Funktionalität.
+      </div>
+    </div>
+    <button class="modal-close" onclick="closeInstallModal()">Verstanden</button>
+  </div>
+</div>
+
 <!-- ══ SETUP ══ -->
 <div id="setup" class="screen active">
   <div class="logo">
@@ -408,9 +486,12 @@
     <div class="btv">BTV Kleinfeld U9</div>
     <h1>Score</h1>
     <div class="sub">BTV Südbayern 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.4</div>
+    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.5</div>
   </div>
-  <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:380px;margin-top:8px;">
+    <div class="copyright-note" style="flex:1;margin:0;">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
+    <button onclick="openInstallModal()" style="background:none;border:none;font-size:28px;cursor:pointer;padding:8px;color:var(--green);flex-shrink:0;margin-left:8px;">ℹ️</button>
+  </div>
 
   <!-- Mode selector -->
   <div class="toggle-row" style="width:100%;max-width:380px">
@@ -896,7 +977,7 @@
     </div>
 
   </div>
-  <div class="rules-footer">BTV U9 Kleinfeld Score · Android 1.4 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">BTV U9 Kleinfeld Score · Android 1.5 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ WINNER ══ -->
@@ -1436,15 +1517,15 @@ function exportPDF() {
 
     <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
     <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
-    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (Android 1.4) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (Android 1.5) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
   `;
 
   document.getElementById('pdf-area').innerHTML = html;
 
   const slug = s => s.replace(/\s+/g, '-');
   const filename = r.modus === 'Doppel'
-    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_Android-1.4`
-    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_Android-1.4`;
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_Android-1.5`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_Android-1.5`;
   const originalTitle = document.title;
   document.title = filename;
   setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
@@ -2131,6 +2212,22 @@ function renderDoppel() {
 </div>
 
 <script>
+  // Installation Modal
+  function openInstallModal() {
+    document.getElementById('installModal').classList.add('active');
+  }
+
+  function closeInstallModal() {
+    document.getElementById('installModal').classList.remove('active');
+  }
+
+  // Modal schließen wenn man auf das Overlay klickt
+  document.getElementById('installModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeInstallModal();
+    }
+  });
+
   // Service Worker für Offline-Unterstützung
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')

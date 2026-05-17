@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2e7d52">
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="tennis-score/ios/manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232e7d52' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>S</text></svg>">
   <title>BTV U9 Kleinfeld Score</title>
   <style>
@@ -128,14 +128,14 @@
     </div>
 
     <div class="version">
-      Version 1.4 · Powered by GitHub Pages
+      Version 1.5 · Powered by GitHub Pages
     </div>
   </div>
 
   <script>
     // Registriere Service Worker für Offline-Unterstützung
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
+      navigator.serviceWorker.register('tennis-score/ios/service-worker.js')
         .then(reg => {
           console.log('Service Worker registered:', reg);
         })

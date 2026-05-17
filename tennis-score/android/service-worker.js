@@ -1,9 +1,9 @@
-const CACHE_NAME = 'btv-score-v1.4';
+const CACHE_NAME = 'btv-score-v1.5';
 const urlsToCache = [
-  '/index.html',
-  '/manifest.json',
-  '/service-worker.js',
-  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap'
+  'index.html',
+  'manifest.json',
+  'service-worker.js',
+  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;500;700&display=swap'
 ];
 
 // Installiere den Service Worker und cache kritische Dateien

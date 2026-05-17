@@ -409,7 +409,7 @@
     <div class="btv">BTV Kleinfeld U9</div>
     <h1>Score</h1>
     <div class="sub">BTV Südbayern 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.4</div>
+    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.5</div>
   </div>
   <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
 
@@ -1444,8 +1444,8 @@ function exportPDF() {
 
   const slug = s => s.replace(/\s+/g, '-');
   const filename = r.modus === 'Doppel'
-    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.4`
-    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.4`;
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.5`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.5`;
   const originalTitle = document.title;
   document.title = filename;
   setTimeout(() => { window.print(); document.title = originalTitle; }, 300);

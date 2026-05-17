@@ -1,6 +1,6 @@
 {
   "name": "BTV U9 Kleinfeld Score",
-  "short_name": "Score",
+  "short_name": "BTV U9 Score",
   "description": "Tennis-Scoring-App für BTV/DTB U9 Kleinfeld-Format",
   "start_url": "index.html",
   "scope": "./",

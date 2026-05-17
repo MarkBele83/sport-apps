@@ -457,9 +457,6 @@
 
 <!-- ══ SETUP ══ -->
 <div id="setup" class="screen active">
-  <div style="position:absolute;top:16px;right:16px;">
-    <button onclick="openInstallModal()" style="background:none;border:none;font-size:24px;cursor:pointer;padding:8px;color:var(--green);">ℹ️</button>
-  </div>
   <div class="logo">
     <div style="font-size:34px;margin-bottom:4px">🎾</div>
     <div class="btv">BTV Kleinfeld U9</div>
@@ -467,7 +464,10 @@
     <div class="sub">BTV Südbayern 2026</div>
     <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.5</div>
   </div>
-  <div class="copyright-note">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:380px;margin-top:8px;">
+    <div class="copyright-note" style="flex:1;margin:0;">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
+    <button onclick="openInstallModal()" style="background:none;border:none;font-size:28px;cursor:pointer;padding:8px;color:var(--green);flex-shrink:0;margin-left:8px;">ℹ️</button>
+  </div>
 
   <!-- Mode selector -->
   <div class="toggle-row" style="width:100%;max-width:380px">

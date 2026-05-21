@@ -3,6 +3,7 @@ const urlsToCache = [
   'index.html',
   'manifest.json',
   'service-worker.js',
+  '../../shared/design.css',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap'
 ];
 

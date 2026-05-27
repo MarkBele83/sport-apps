@@ -8,8 +8,14 @@
   <meta name="theme-color" content="#2e7d52">
   <link rel="manifest" href="tennis-score/ios/manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232e7d52' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>S</text></svg>">
-  <title>BTV U9 Kleinfeld Score</title>
+  <title>Tennis Score Apps · BTV</title>
   <style>
+    .app-section { margin-bottom: 32px; }
+    .app-section-label {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      opacity: 0.6; margin-bottom: 10px;
+    }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.2); margin: 28px 0; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -120,22 +126,26 @@
 <body>
   <div class="container">
     <div class="logo">🎾</div>
-    <h1>BTV U9 Kleinfeld Score</h1>
+    <h1>Tennis Score Apps</h1>
     <div class="subtitle">
-      Tennis-Scoring-App für<br>BTV/DTB U9 Turniere
-    </div>
-
-    <div class="button-group">
-      <a href="tennis-score/ios/" class="button primary">
-        iOS-Version
-      </a>
-      <a href="tennis-score/android/" class="button secondary">
-        Android-Version
-      </a>
+      Scoring-Apps für Tennis · BTV/DTB
     </div>
 
     <div class="device-indicator" id="deviceIndicator">
       Automatische Erkennung lädt...
+    </div>
+
+    <!-- U9 App -->
+    <div class="app-section">
+      <div class="app-section-label">BTV U9 Kleinfeld</div>
+      <div class="button-group">
+        <a href="tennis-score/ios/" class="button primary">
+          🍎 iOS · U9 Kleinfeld Score
+        </a>
+        <a href="tennis-score/android/" class="button secondary">
+          🤖 Android · U9 Kleinfeld Score
+        </a>
+      </div>
     </div>
 
     <div class="info">
@@ -160,7 +170,7 @@
     </div>
 
     <div class="version">
-      Version 1.5 · Powered by GitHub Pages
+      U9 v1.5 · Erwachsene v1.0 · Powered by GitHub Pages
     </div>
   </div>
 

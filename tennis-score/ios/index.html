@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="../../icon.png">
 <link rel="apple-touch-icon" href="../../icon.png">
-<title>BTV U9 Kleinfeld Score · iOS 1.6</title>
+<title>BTV U9 Kleinfeld Score · iOS 1.7</title>
 <link rel="stylesheet" href="../../shared/design.css">
 </head>
 <body>
@@ -44,7 +44,7 @@
     <div class="btv">BTV Kleinfeld U9</div>
     <h1>Score</h1>
     <div class="sub">BTV Südbayern 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.6</div>
+    <div class="platform-badge"><span class="plat-icon">🍎</span> iOS · Version 1.7</div>
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:380px;margin-top:8px;">
     <div class="copyright-note" style="flex:1;margin:0;">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
@@ -309,7 +309,7 @@
         <div class="rule-item"><div class="rule-dot"></div><div>Aufschlag erfolgt <strong>diagonal</strong> ins gegnerische Aufschlagfeld — abwechselnd von rechts und links.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div><strong>Südliga 2:</strong> Beim Unterhand-Aufschlag darf der Ball vorher aufspringen.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Berührt der Ball die <strong>Netzkante</strong> beim Aufschlag → Wiederholung (kein Fehler).</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschlag wechselt <strong>nach jedem Spiel</strong>.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschlag wechselt <strong>nach jedem Spiel</strong> — auch über das Satzende hinweg. Nach einem Tiebreak schlägt zuerst auf, wer im Tiebreak den ersten Punkt returniert hat.</div></div>
       </div>
     </div>
 
@@ -535,7 +535,7 @@
     </div>
 
   </div>
-  <div class="rules-footer">BTV U9 Kleinfeld Score · iOS 1.6 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">BTV U9 Kleinfeld Score · iOS 1.7 · BTV Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ WINNER ══ -->
@@ -897,12 +897,14 @@ function chooseTBSide(side) {
   if (currentMode === 'doppel') {
     dblState.pointInGame = (side === 'right') ? 0 : 1; // Spielersicht: rechts = Deuce
     dblState.phase = 'tiebreak';
+    dblState.tbFirstRotIdx = dblState.rotationIdx; // für Aufschlag im nächsten Satz
     dblState.tbPoints = { home: 0, guest: 0 };
     dblState.tbTotal = 0;
     renderDoppel();
   } else {
     state.pointInGame = (side === 'right') ? 0 : 1; // Spielersicht: rechts = Deuce
     state.phase = 'tiebreak';
+    state.tbFirstServer = state.serving; // für Aufschlag im nächsten Satz
     state.tbPoints = { home: 0, guest: 0 };
     state.tbTotal = 0;
     renderAll();
@@ -926,8 +928,11 @@ function winSet(player, fromTB = false) {
   state.phase = 'set';
   state.currentSet++;
   swapSides(); // after every set
-  state.setFirstServer = state.setFirstServer === 'home' ? 'guest' : 'home';
-  state.serving = state.setFirstServer;
+  // Aufschlag wechselt über das Satzende hinweg weiter: winGame() hat bereits
+  // gewechselt. Nach einem Tiebreak (zählt wie ein Spiel) schlägt zuerst auf,
+  // wer im Tiebreak den ersten Punkt returniert hat.
+  if (fromTB) state.serving = state.tbFirstServer === 'home' ? 'guest' : 'home';
+  state.setFirstServer = state.serving;
 
   if (state.sets.home === 1 && state.sets.guest === 1) {
     state.phase = 'matchtb';
@@ -1100,15 +1105,15 @@ function exportPDF() {
 
     <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
     <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
-    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (iOS 1.6) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+    <div class="pdf-footer">Erstellt mit BTV U9 Kleinfeld Score (iOS 1.7) · Bayerischer Tennis-Verband · U9 Kleinfeld Südbayern 2026<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
   `;
 
   document.getElementById('pdf-area').innerHTML = html;
 
   const slug = s => s.replace(/\s+/g, '-');
   const filename = r.modus === 'Doppel'
-    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.6`
-    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.6`;
+    ? `BTV-U9-Score_${slug(r.rawHome)}_${slug(r.rawGuest)}_iOS-1.7`
+    : `BTV-U9-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.7`;
   const originalTitle = document.title;
   document.title = filename;
   setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
@@ -1485,7 +1490,13 @@ function dblWinSet(player, fromTB = false) {
   dblState.currentSet++;
   dblSwapSides();
   // Next set: rotation continues from next server in sequence
-  // (dblAdvanceServer was called last winGame, so rotationIdx is already next)
+  // (dblAdvanceServer was called last winGame, so rotationIdx is already next).
+  // Nach einem Tiebreak (zählt wie ein Spiel): Nachfolger des Tiebreak-Eröffners
+  // in der Reihenfolge — also das Team, das im Tiebreak zuerst returniert hat.
+  if (fromTB) {
+    dblState.rotationIdx = (dblState.tbFirstRotIdx + 1) % 4;
+    dblState.servingTeam = dblState.rotation[dblState.rotationIdx][0];
+  }
   dblState.setFirstRotIdx = dblState.rotationIdx;
 
   if (dblState.sets.home === 1 && dblState.sets.guest === 1) {

@@ -57,4 +57,4 @@ Fragen oder Probleme? Schreibe ein Issue auf GitHub:
 
 ---
 
-**Hosting:** GitHub Pages · **Version:** 1.6 · **BTV Südbayern 2026**
+**Hosting:** GitHub Pages · **Version:** 1.7 · **BTV Südbayern 2026**

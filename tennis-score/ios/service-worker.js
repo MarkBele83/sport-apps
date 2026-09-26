@@ -1,4 +1,4 @@
-const CACHE_NAME = 'btv-score-v1.5';
+const CACHE_NAME = 'btv-score-v1.6';
 const urlsToCache = [
   'index.html',
   'manifest.json',

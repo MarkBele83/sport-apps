@@ -981,9 +981,10 @@ function serveSideText(pointInGame) {
     ? { side: 'RECHTS', word: 'Deuce' }
     : { side: 'LINKS', word: 'Ad' };
 }
-function setServeHint(el, active, pointInGame, prefix, extra = '') {
+// Hinweis steht in beiden Zonen; sichtbar ist er nur in der Zone mit .serving –
+// so blendet er per CSS gleichzeitig mit dem Aufschlag-Ball (.serve-dot) über.
+function setServeHint(el, pointInGame, prefix, extra = '') {
   el.textContent = '';
-  if (!active) return;
   const s = serveSideText(pointInGame);
   const main = document.createElement('div');
   main.className = 'serve-side-main';
@@ -1132,8 +1133,8 @@ function renderAll() {
   document.getElementById('side-guest').textContent = homeLeft ? '▶ Rechts' : '◀ Links';
 
   // Aufschlagseite aus Sicht des Aufschlägers (gerade = rechts/Deuce, ungerade = links/Ad)
-  setServeHint(document.getElementById('serve-hint-home'), serving === 'home', state.pointInGame, '🎾 Aufschlag von');
-  setServeHint(document.getElementById('serve-hint-guest'), serving === 'guest', state.pointInGame, '🎾 Aufschlag von');
+  setServeHint(document.getElementById('serve-hint-home'), state.pointInGame, '🎾 Aufschlag von');
+  setServeHint(document.getElementById('serve-hint-guest'), state.pointInGame, '🎾 Aufschlag von');
 
   document.getElementById('zone-home').classList.toggle('serving', serving === 'home');
   document.getElementById('zone-guest').classList.toggle('serving', serving === 'guest');
@@ -1770,14 +1771,10 @@ function renderDoppel() {
     document.getElementById(`dbl-${p1id}-serve`).style.display = slot1.server ? '' : 'none';
     document.getElementById(`dbl-${p2id}-serve`).style.display = slot2.server ? '' : 'none';
 
-    // Serve info: nur beim aufschlagenden Team
-    const infoEl = document.getElementById(`dbl-${team}-serve-info`);
-    if (isServing) {
-      const serverName = ds.names[team][srv[1]];
-      setServeHint(infoEl, true, ds.pointInGame, `🎾 ${serverName} schlägt von`, ' · Beide an Grundlinie');
-    } else {
-      setServeHint(infoEl, false);
-    }
+    // Serve info: sichtbar nur beim aufschlagenden Team (.serving, siehe setServeHint)
+    const serverName = ds.names[srv[0]][srv[1]];
+    setServeHint(document.getElementById(`dbl-${team}-serve-info`), ds.pointInGame,
+      `🎾 ${serverName} schlägt von`, ' · Beide an Grundlinie');
   });
 
   // Menu score

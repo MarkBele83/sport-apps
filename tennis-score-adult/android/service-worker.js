@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tennis-adult-android-v1.0';
+const CACHE_NAME = 'tennis-adult-android-v1.1';
 const urlsToCache = [
   'index.html',
   'manifest.json',

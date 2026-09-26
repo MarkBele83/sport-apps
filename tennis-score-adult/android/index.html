@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="../../icon.png">
 <link rel="stylesheet" href="../../shared/design.css">
-<title>Tennis Score Erwachsene · Android 1.0</title>
+<title>Tennis Score Erwachsene · Android 1.1</title>
 </head>
 <body>
 
@@ -44,7 +44,7 @@
     <div class="btv">Tennis Erwachsene</div>
     <h1>Score</h1>
     <div class="sub">Standard-Zählweise 2026</div>
-    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.0</div>
+    <div class="platform-badge"><span class="plat-icon">🤖</span> Android · Version 1.1</div>
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:380px;margin-top:8px;">
     <div class="copyright-note" style="flex:1;margin:0;">© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung<br><a href="https://github.com/MarkBele83/sport-apps" style="color: inherit; text-decoration: none; font-size: 11px;">Open Source auf GitHub</a></div>
@@ -189,10 +189,10 @@
       <div class="zone-top-row">
         <span class="zone-heim-gast heim">Heim</span>
         <span class="zone-side-label" id="side-home">◀ Links</span>
-        <span class="zone-deuce-ad" id="serving-side-home">Deuce</span>
       </div>
       <div class="zone-name" id="zone-name-home">Heimspieler</div>
       <div class="point-display" id="point-home">0</div>
+      <div class="serve-side-hint" id="serve-hint-home"></div>
       <div class="tap-hint" id="tap-home">▲ Tippen für Punkt</div>
     </div>
     <div class="player-zone guest" id="zone-guest" onclick="scorePoint('guest')">
@@ -200,10 +200,10 @@
       <div class="zone-top-row">
         <span class="zone-heim-gast gast">Gast</span>
         <span class="zone-side-label" id="side-guest">▶ Rechts</span>
-        <span class="zone-deuce-ad" id="serving-side-guest">Deuce</span>
       </div>
       <div class="zone-name" id="zone-name-guest">Gastspieler</div>
       <div class="point-display" id="point-guest">0</div>
+      <div class="serve-side-hint" id="serve-hint-guest"></div>
       <div class="tap-hint" id="tap-guest">▼ Tippen für Punkt</div>
     </div>
   </div>
@@ -227,7 +227,7 @@
           <div class="dbl-serve-badge" id="dbl-h2-serve" style="display:none">🎾</div>
         </div>
       </div>
-      <div class="dbl-serve-info" id="dbl-home-serve-info"></div>
+      <div class="dbl-serve-info serve-side-hint" id="dbl-home-serve-info"></div>
       <div class="point-display dbl-point" id="dbl-point-home">0</div>
     </div>
     <div class="player-zone guest dbl-team-zone" id="dbl-zone-guest" onclick="scorePoint('guest')">
@@ -248,7 +248,7 @@
           <div class="dbl-serve-badge" id="dbl-g2-serve" style="display:none">🎾</div>
         </div>
       </div>
-      <div class="dbl-serve-info" id="dbl-guest-serve-info"></div>
+      <div class="dbl-serve-info serve-side-hint" id="dbl-guest-serve-info"></div>
       <div class="point-display dbl-point" id="dbl-point-guest">0</div>
     </div>
   </div>
@@ -297,8 +297,8 @@
         <div class="rule-item"><div class="rule-dot"></div><div>Jeder Spieler hat <strong>2 Aufschläge</strong> pro Punkt.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Aufschlag erfolgt <strong>diagonal</strong> ins gegnerische Aufschlagfeld — abwechselnd von rechts (Deuce) und links (Ad).</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Berührt der Ball die <strong>Netzkante</strong> beim Aufschlag → Wiederholung (kein Fehler).</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschlag wechselt <strong>nach jedem Spiel</strong>.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Das <strong>Deuce/Ad-Label</strong> am aufschlagenden Spieler zeigt an, von welcher Seite gerade aufgeschlagen wird.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der Aufschlag wechselt <strong>nach jedem Spiel</strong> — auch über das Satzende hinweg. Nach einem Tiebreak schlägt zuerst auf, wer im Tiebreak den ersten Punkt returniert hat.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Beim aufschlagenden Spieler steht gut sichtbar <strong>🎾 Aufschlag von RECHTS</strong> bzw. <strong>LINKS</strong> (aus Sicht des Aufschlägers, darunter Deuce/Ad) — auch im Tiebreak.</div></div>
       </div>
     </div>
 
@@ -343,7 +343,7 @@
     </div>
 
   </div>
-  <div class="rules-footer">Standard Tennis · Erwachsene · Version 1.0<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">Standard Tennis · Erwachsene · Version 1.1<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ HOW-TO ══ -->
@@ -370,7 +370,7 @@
       <div class="rule-card-header"><span class="rule-card-icon">👆</span><span class="rule-card-title">Punkte zählen</span></div>
       <div class="rule-card-body">
         <div class="rule-item"><div class="rule-dot"></div><div><strong>Obere Hälfte</strong> = Heim, <strong>untere Hälfte</strong> = Gast — einfach auf die Hälfte des Punktgewinners tippen.</div></div>
-        <div class="rule-item"><div class="rule-dot"></div><div>Der <strong>gelbe Punkt</strong> (🟡) zeigt, wer aufschlägt. Das Deuce/Ad-Label zeigt die Aufschlagseite.</div></div>
+        <div class="rule-item"><div class="rule-dot"></div><div>Der <strong>gelbe Punkt</strong> (🟡) zeigt, wer aufschlägt. Der gelbe Hinweis darunter zeigt die Aufschlagseite.</div></div>
         <div class="rule-item"><div class="rule-dot"></div><div>Bei <strong>40:40</strong>: App zeigt „E" (Einstand). Weiterspielen — beim Vorteil erscheint „Vor" auf der betreffenden Seite.</div></div>
         <div class="rule-highlight"><strong>Anzeige verstehen</strong>E = Einstand (beide gleich bei 40) · Vor = Vorteil (dieser Spieler ist vorne)</div>
       </div>
@@ -413,7 +413,7 @@
     </div>
 
   </div>
-  <div class="rules-footer">Tennis Score Erwachsene · Android 1.0<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+  <div class="rules-footer">Tennis Score Erwachsene · Android 1.1<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
 </div>
 
 <!-- ══ WINNER ══ -->
@@ -667,6 +667,7 @@ function winGame(player) {
 
   // Tiebreak at 6:6
   if (h === 6 && g === 6) {
+    state.tbFirstServer = state.serving; // für Aufschlag im nächsten Satz
     const sc = checkSideChange();
     if (sc) {
       swapSides();
@@ -704,6 +705,7 @@ function scoreTBPoint(player) {
 
   state.tbPoints[player]++;
   state.tbTotal++;
+  state.pointInGame++; // Aufschlagseite wechselt nach jedem Punkt
 
   // Serve: switch after point 1, then every 2
   if (state.tbTotal === 1 || (state.tbTotal > 1 && (state.tbTotal - 1) % 2 === 0)) switchServe();
@@ -739,12 +741,16 @@ function winSet(player, fromTB = false) {
   state.advantage = null;
   state.tbPoints = { home: 0, guest: 0 };
   state.tbTotal = 0;
+  state.pointInGame = 0;
   state.gamesInSet = 0;
   state.phase = 'set';
   state.currentSet++;
   swapSides();
-  state.setFirstServer = state.setFirstServer === 'home' ? 'guest' : 'home';
-  state.serving = state.setFirstServer;
+  // Aufschlag wechselt über das Satzende hinweg weiter: winGame() hat bereits
+  // gewechselt. Nach einem Tiebreak (zählt wie ein Spiel) schlägt zuerst auf,
+  // wer im Tiebreak den ersten Punkt returniert hat.
+  if (fromTB) state.serving = state.tbFirstServer === 'home' ? 'guest' : 'home';
+  state.setFirstServer = state.serving;
 
   if (state.sets[player] === 2) {
     showSetModal(`Satz ${setNum}: ${state.names[player]}!`, `${line}\n\n⇄ Seitenwechsel!`, () => winMatch(player));
@@ -791,6 +797,29 @@ function winMatch(player) {
   detail += `\nSätze: ${state.sets.home}:${state.sets.guest}`;
   document.getElementById('ws-score-detail').textContent = detail;
   showScreen('winner');
+}
+
+// Aufschlagseite: gerade Punktzahl im Spiel/Tiebreak = rechts (Deuce), ungerade = links (Ad)
+function serveSideText(pointInGame) {
+  return (pointInGame || 0) % 2 === 0
+    ? { side: 'RECHTS', word: 'Deuce' }
+    : { side: 'LINKS', word: 'Ad' };
+}
+// Hinweis steht in beiden Zonen; sichtbar ist er nur in der Zone mit .serving –
+// so blendet er per CSS gleichzeitig mit dem Aufschlag-Ball (.serve-dot) über.
+function setServeHint(el, pointInGame, prefix) {
+  el.textContent = '';
+  const s = serveSideText(pointInGame);
+  const main = document.createElement('div');
+  main.className = 'serve-side-main';
+  main.append(prefix + ' ');
+  const strong = document.createElement('strong');
+  strong.textContent = s.side;
+  main.append(strong);
+  const sub = document.createElement('div');
+  sub.className = 'serve-side-sub';
+  sub.textContent = `${s.word}-Seite · aus Sicht des Aufschlägers`;
+  el.append(main, sub);
 }
 
 function switchServe() { state.serving = state.serving === 'home' ? 'guest' : 'home'; }
@@ -878,11 +907,11 @@ function exportPDF() {
     </table>
     <div class="pdf-result">Sieger: ${r.winner} (${r.winnerSide})</div>
     <div style="font-size:14px;color:#4a6455">Ergebnis: ${r.scoreParts.join('  ·  ')}</div>
-    <div class="pdf-footer">Erstellt mit Tennis Score Erwachsene (iOS 1.0)<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
+    <div class="pdf-footer">Erstellt mit Tennis Score Erwachsene (Android 1.1)<br>© 2026 Markus Ströbele · Nutzung ohne Gewähr · Nur für private, nicht-kommerzielle Nutzung</div>
   `;
   document.getElementById('pdf-area').innerHTML = html;
   const slug = s => s.replace(/\s+/g, '-');
-  const filename = `Tennis-Score_${slug(r.names.home)}_${slug(r.names.guest)}_iOS-1.0`;
+  const filename = `Tennis-Score_${slug(r.names.home)}_${slug(r.names.guest)}_Android-1.1`;
   const originalTitle = document.title;
   document.title = filename;
   setTimeout(() => { window.print(); document.title = originalTitle; }, 300);
@@ -903,9 +932,9 @@ function renderAll() {
   document.getElementById('side-home').textContent = homeLeft ? '◀ Links' : 'Rechts ▶';
   document.getElementById('side-guest').textContent = homeLeft ? '▶ Rechts' : '◀ Links';
 
-  const servingSide = (state.pointInGame || 0) % 2 === 0 ? 'Deuce' : 'Ad';
-  document.getElementById('serving-side-home').textContent = serving === 'home' ? servingSide : '';
-  document.getElementById('serving-side-guest').textContent = serving === 'guest' ? servingSide : '';
+  // Aufschlagseite aus Sicht des Aufschlägers (gerade = rechts/Deuce, ungerade = links/Ad)
+  setServeHint(document.getElementById('serve-hint-home'), state.pointInGame, '🎾 Aufschlag von');
+  setServeHint(document.getElementById('serve-hint-guest'), state.pointInGame, '🎾 Aufschlag von');
 
   document.getElementById('zone-home').classList.toggle('serving', serving === 'home');
   document.getElementById('zone-guest').classList.toggle('serving', serving === 'guest');
@@ -1196,6 +1225,7 @@ function dblWinGame(player) {
 
   // Tiebreak at 6:6
   if (h === 6 && g === 6) {
+    dblState.tbFirstRotIdx = dblState.rotationIdx; // für Aufschlag im nächsten Satz
     const sc = dblCheckSideChange();
     if (sc) {
       dblSwapSides();
@@ -1239,10 +1269,18 @@ function dblWinSet(player, fromTB = false) {
   dblState.advantage = null;
   dblState.tbPoints = { home: 0, guest: 0 };
   dblState.tbTotal = 0;
+  dblState.pointInGame = 0;
   dblState.gamesInSet = 0;
   dblState.phase = 'set';
   dblState.currentSet++;
   dblSwapSides();
+  // Rotation läuft über das Satzende weiter (dblWinGame hat bereits weitergerückt).
+  // Nach einem Tiebreak (zählt wie ein Spiel): Nachfolger des Tiebreak-Eröffners
+  // in der Reihenfolge — also das Team, das im Tiebreak zuerst returniert hat.
+  if (fromTB) {
+    dblState.rotationIdx = (dblState.tbFirstRotIdx + 1) % 4;
+    dblState.servingTeam = dblState.rotation[dblState.rotationIdx][0];
+  }
   dblState.setFirstRotIdx = dblState.rotationIdx;
 
   if (dblState.sets[player] === 2) {
@@ -1342,7 +1380,11 @@ function dblScoreTBPoint(player) {
   dblState.tbPoints[player]++;
   dblState.tbTotal++;
 
+  // Aufschlagseite läuft im Tiebreak über den Aufschlägerwechsel weiter
+  // (dblAdvanceServer setzt pointInGame sonst auf 0 zurück).
+  const nextPointInGame = dblState.pointInGame + 1;
   if (dblState.tbTotal === 1 || (dblState.tbTotal > 1 && (dblState.tbTotal - 1) % 2 === 0)) dblAdvanceServer();
+  dblState.pointInGame = nextPointInGame;
 
   if (dblState.tbTotal > 0 && dblState.tbTotal % 6 === 0) {
     dblSwapSides();
@@ -1489,14 +1531,10 @@ function renderDoppel() {
     document.getElementById(`dbl-${p1id}-serve`).style.display = p1server ? '' : 'none';
     document.getElementById(`dbl-${p2id}-serve`).style.display = p2server ? '' : 'none';
 
-    const serveInfo = document.getElementById(`dbl-${team === 'home' ? 'home' : 'guest'}-serve-info`);
-    if (isServing) {
-      const serverName = ds.names[team][srv[1]];
-      const sideName = servSide === 'right' ? 'Deuce (rechts)' : 'Ad (links)';
-      serveInfo.textContent = `🎾 ${serverName} schlägt auf · ${sideName}`;
-    } else {
-      serveInfo.textContent = '';
-    }
+    // Serve info: sichtbar nur beim aufschlagenden Team (.serving, siehe setServeHint)
+    const serverName = ds.names[srv[0]][srv[1]];
+    setServeHint(document.getElementById(`dbl-${team}-serve-info`), ds.pointInGame,
+      `🎾 ${serverName} schlägt von`);
   });
 
   document.getElementById('menu-score-text').textContent =

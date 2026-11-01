@@ -1,3 +1,7 @@
+# Security-Scans direkt in diesem Repo (oeffentliches Repo kann den privaten
+# zentralen Workflow nicht aufrufen). Gleicher Umfang wie
+# MarkBele83/security-workflows (v1.1), ohne Trivy (keine Docker/IaC-Dateien).
+# Aenderungen am zentralen Workflow muessen hier manuell nachgezogen werden.
 name: security
 
 on:
@@ -15,14 +19,106 @@ concurrency:
   group: security-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  SEMGREP_VERSION: "1.183.0"
+  SEMGREP_CONFIG: "p/default"
+
 jobs:
-  security:
+  secrets:
+    name: secrets (gitleaks)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+
+  sca-pr:
+    if: github.event_name == 'pull_request'
     permissions:
       actions: read
       contents: read
-      pull-requests: read
       security-events: write
-    uses: MarkBele83/security-workflows/.github/workflows/security-reusable.yml@3ca675dd2d0a6b1aba190f3ab4d7c11ce4466c1d # v1.1
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
     with:
-      semgrep-config: "p/default"
-      enable-trivy: false
+      upload-sarif: false
+      scan-args: |-
+        --recursive
+        ./
+
+  sca-full:
+    if: github.event_name != 'pull_request'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+    with:
+      upload-sarif: false
+      scan-args: |-
+        --recursive
+        ./
+
+  sast:
+    name: sast (semgrep)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Semgrep CE (nur ERROR, im PR diff-aware)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python -m pip install --disable-pip-version-check "semgrep==${SEMGREP_VERSION}"
+          ARGS=(--config "$SEMGREP_CONFIG" --error --severity ERROR --metrics off)
+          if [ -n "${BASE_SHA}" ]; then ARGS+=(--baseline-commit "${BASE_SHA}"); fi
+          semgrep scan "${ARGS[@]}"
+
+  workflows:
+    name: workflows (zizmor)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@53290badfa369cb0bf7ad16342cb62c2fa47ac7b # v0.8.0
+        with:
+          advanced-security: false
+
+  gate:
+    # Name bewusst "security / gate": identisch zum Required-Check-Namen
+    # der anderen Repos (dort entsteht er aus Aufrufer-Job + "gate").
+    name: security / gate
+    if: always()
+    needs: [secrets, sca-pr, sca-full, sast, workflows]
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Ergebnisse auswerten
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Job-Ergebnisse: ${RESULTS}"
+          for r in ${RESULTS}; do
+            case "$r" in
+              success|skipped) ;;
+              *) echo "::error::Security-Job endete mit: $r"; exit 1 ;;
+            esac
+          done

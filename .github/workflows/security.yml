@@ -1,0 +1,28 @@
+name: security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  security:
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+      security-events: write
+    uses: MarkBele83/security-workflows/.github/workflows/security-reusable.yml@3ca675dd2d0a6b1aba190f3ab4d7c11ce4466c1d # v1.1
+    with:
+      semgrep-config: "p/default"
+      enable-trivy: false

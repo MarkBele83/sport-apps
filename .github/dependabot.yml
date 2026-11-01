@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule: { interval: "weekly", day: "monday", timezone: "Europe/Berlin" }
+    groups:
+      actions:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
+    ignore:
+      # private central repo, not readable by Dependabot; bumped via script
+      - dependency-name: "MarkBele83/security-workflows"
